@@ -1,0 +1,69 @@
+.circular-div {
+    border: 3px solid blue;
+    color: white;
+    background-color: blue;
+    height: 100;
+    width: 100;
+    border-radius: 100px;
+    margin: 10px;
+    padding: 20px;
+}
+
+.margin-right {
+    margin-right: 5px;
+}
+
+
+.bold-text {
+    font-weight: bolder
+}
+
+.red-text {
+    color: red;
+}
+
+.right-margin {
+    margin-right: 5px;
+}
+
+.body {
+    margin-top: 50px;
+    margin-bottom: 40px;
+    height: 100%;
+}
+
+.header-left, .header-right {
+    margin: 10px 20px;
+}
+
+a {
+    cursor: pointer
+}
+
+.header {
+    background-color: rgba(163, 189, 230, 0.95);
+    border-bottom: darkblue solid 1px;
+    right: 0;
+    position: fixed; /* Set the navbar to fixed position */
+    top: 0; /* Position the navbar at the top of the page */
+    width: 100%; /* Full width */
+    height: 40px;
+    z-index: 100;
+}
+
+.footer {
+    bottom: 0;
+    background-color: rgba(163, 189, 230, 0.95);
+    height: 30px;
+    left: 0;
+    position: fixed; 
+    font-size: small;
+    width:100%;
+    border-top: darkblue solid 1px;
+ }
+
+
+ li:hover {
+    cursor: pointer;
+    background-color: rgba(163, 189, 230, 0.3);
+ }
