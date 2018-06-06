@@ -19,17 +19,11 @@ export function savePatient(postData, navigationCallback) {
       data: JSON.stringify(postData),
       headers: {"Content-Type": "application/json; charset=utf-8"}  
       })
-      // .post(BASE_URL + "/api/Patient/SavePatient", postData)
       .then(response => {
-        if (response.status == 200)
-          navigationCallback("/Patient/" + response.data.Patient.PatientId);
-        //NEED ERROR AND CATHC TODO
-        else {
-          //no need for checking data, if all goes as well, the objectsent is returned
-          //Supererror here and below ... figure out what to do
-        }
+        if (response.status >= 200 && response.status < 300)
+          navigationCallback("/Patient/" + response.data.patientId);
       })
-      .catch(console.log("SuperErrorINSavePatientaction"));
+      .catch(response => console.log("SuperErrorINSavePatientaction", response));
   };
 }
 

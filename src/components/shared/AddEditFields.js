@@ -64,8 +64,8 @@ class AddEditFields extends React.Component {
             <option value="" disabled>
               Gender...
             </option>
-            <option>Male</option>
-            <option>Female</option>
+            <option value="M">Male</option>
+            <option value="F">Female</option>
           </Field>
           <Field
             name="email"

@@ -35,7 +35,7 @@ class AddPatient extends Component {
       willSubmit: true
     });
 
-    this.props.savePatient(this.state.patientInfo, this.props.history.push);
+    this.props.savePatient(this.state.patientDetails, this.props.history.push);
   }
 
   onSubmit(event) {
