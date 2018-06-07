@@ -53,7 +53,6 @@ class AddPatient extends Component {
       emergencyContactRelation: event.emergencyContactRelation,
       emergencyContactPhone: event.emergencyContactPhone
     };
-    console.log("PatientDetails", patientDetails)
 
     this.setState({
       showModal: true,
@@ -62,9 +61,15 @@ class AddPatient extends Component {
   }
 
   render() {
-    const { handleSubmit } = this.props;
+
+    console.log("Props in adds render, and state", this.props, this.state )
+
+
+    const { handleSubmit, noSuccess } = this.props;
     return (
       <div className="row">
+      {/* FIX THIS INTO AN ACTUAL ERROR BANNER OR SOMETHING -- DONT COPY CPS, WHAT DO YOU WANT ?!?!?!?! =========================================================== */}
+      {noSuccess ? <div>ERROR HAPPENED COULDNT SAVE TRY AGAIN</div> : null} 
         <h1>Add A Patient</h1>
         <form onSubmit={handleSubmit(this.onSubmit.bind(this))}>
           <AddEditFields />
@@ -90,7 +95,7 @@ class AddPatient extends Component {
         )}
 
         <Prompt
-          when={!this.state.willSubmit && !this.props.pristine}
+          when={(!this.state.willSubmit && !this.props.pristine) || this.props.noSuccess == true  }
           message={"Navigating back will clear all your data. Continue ?"}
         />
       </div>
@@ -112,7 +117,8 @@ function validate(values) {
 
 function mapStateToProps(state) {
   return {
-    patientDetails: state.patients.patientDetails
+    patientDetails: state.patients.patientDetails,
+    noSuccess: state.patients.noSuccess
   };
 }
 
