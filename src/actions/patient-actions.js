@@ -15,15 +15,17 @@ export function savePatient(postData, navigationCallback) {
     axios({
       method: "POST",
       url: BASE_URL + "/api/Patient/SavePatient",
-      data: JSON.stringify(postData),
+      data: postData,
       headers: { "Content-Type": "application/json; charset=utf-8" }
     })
       .then(response => {
         if (response.status >= 200 && response.status < 300)
           navigationCallback("/Patient/" + response.data.patientId);
       })
-      //Need to actually do something with a save error here TODO
-      .catch(() => dispatch({ type: SAVE_PATIENT_ERROR }));
+      .catch((error) => {
+        error = error.response ? error.response.data : "Something went very wrong";
+        dispatch({ type: SAVE_PATIENT_ERROR, payload: error })
+      }); 
   };
 }
 

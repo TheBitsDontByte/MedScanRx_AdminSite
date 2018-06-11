@@ -28,13 +28,13 @@ const AddEditMedicineFields = () => {
         <div className="col-sm-6">
           <Field
             type="text"
-            name="numberOfDoses"
+            name="originalNumberOfDoses"
             label="Number of Doses: "
             component={renderField}
           />
           <Field
             type="text"
-            name="numberOfRefills"
+            name="originalNumberOfRefills"
             label="Number of Refills: "
             component={renderField}
           />

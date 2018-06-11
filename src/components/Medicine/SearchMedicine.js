@@ -6,13 +6,13 @@ import { Link } from "react-router-dom";
 
 import {
   searchOpenFDA,
+  selectOpenFdaResult,
   clearMedicineData
 } from "../../actions/medicine-actions";
 
 //TEMP
 import axios from "axios";
 import _ from "lodash";
-import { NO_RESULTS } from "../../actions/patient-actions";
 
 class SearchMedicine extends Component {
   constructor(props) {
@@ -68,11 +68,11 @@ class SearchMedicine extends Component {
                 generic_name,
                 manufacturer_name
               }
-            }) => {
+            }, index) => {
               return (
                 <li
                   className="list-group-item"
-                  onClick={() => this.handleSearchResultClick()}
+                  onClick={() => this.handleSearchResultClick(index)}
                   key={package_ndc}
                 >
                   <strong>NDC:</strong>{" "}
@@ -93,8 +93,9 @@ class SearchMedicine extends Component {
     }
   }
 
-  handleSearchResultClick() {
+  handleSearchResultClick(index) {
     let { patientId } = this.props.match.params;
+    this.props.selectOpenFdaResult(this.props.searchResults[index]);
     this.props.history.push(`/Patient/${patientId}/AddMedicine`);
   }
 
@@ -175,5 +176,8 @@ export default reduxForm({
   validate,
   form: "AddMedicineSearch"
 })(
-  connect(mapStateToProps, { searchOpenFDA, clearMedicineData })(SearchMedicine)
+  connect(
+    mapStateToProps,
+    { searchOpenFDA, clearMedicineData, selectOpenFdaResult }
+  )(SearchMedicine)
 );

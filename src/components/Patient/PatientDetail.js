@@ -22,7 +22,7 @@ class PatientDetail extends Component {
         <h1>Couldn't find a patient with Patient ID {this.props.match.params.patientId}</h1>
       )
     }
-    if (this.props.patientDetail === undefined) {
+    if (!this.props.patientDetail) {
       return (
         <div>Loading...</div>
       )

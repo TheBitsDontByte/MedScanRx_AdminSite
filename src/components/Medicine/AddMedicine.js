@@ -5,9 +5,13 @@ import { Link } from "react-router-dom";
 import { connect } from "react-redux";
 import { Field, FieldArray, reduxForm } from "redux-form";
 import _ from "lodash";
+import moment from "moment";
 
 import { getPatient } from "../../actions/patient-actions";
-import { searchOpenFDA } from "../../actions/medicine-actions";
+import {
+  searchOpenFDA,
+  savePrescription
+} from "../../actions/medicine-actions";
 import AddEditMedicineFields from "../shared/AddEditMedicineFields";
 
 //REFACTOR THIS MONSTROSITY :O
@@ -16,15 +20,48 @@ class AddMedicine extends Component {
 
   componentWillMount() {
     this.props.getPatient(this.props.match.params.patientId);
-    this.props.searchOpenFDA({ ndc: "0641-0376-21" });
+    //this.props.searchOpenFDA({ ndc: "0641-0376-21" });
   }
 
   handleAdditionalDetailChange(event) {
     this.setState({ selectedAdditionalDetail: event.target.value });
   }
 
+  calculateAlerts(scheduledAlerts, originalNumberOfDoses) {
+    let dosesPerDay = document.getElementById("dosesPerDay").value;
+    let allAlerts = [];
+    let day = 0;
+    for (let i = 0; i < originalNumberOfDoses; i++) {
+      if (i % dosesPerDay == 0) day++;
+      let nextAlert = moment(scheduledAlerts[i % dosesPerDay])
+        .add(day, "day")
+        .toString();
+
+      allAlerts.push(nextAlert);
+    }
+
+    return allAlerts;
+  }
+
+  onSubmit(values) {
+    let postData = {
+      ...values,
+      scheduledAlerts: this.calculateAlerts(
+        values.scheduledAlerts,
+        values.originalNumberOfDoses
+      ),
+      ndc: this.props.ndc[0],
+      patientId: this.props.patientId,
+      brandName: this.props.brandName[0],
+      genericName: this.props.genericName[0]
+    };
+
+    console.log("Values on submit", postData);
+    this.props.savePrescription(postData);
+  }
+
   render() {
-    console.log("Render state", this.state);
+    console.log("Render state in add", this.state);
     return (
       <div className="row">
         <h1>
@@ -64,7 +101,6 @@ class AddMedicine extends Component {
                       </option>
                       {_.map(this.props.allMedicineInfo, (value, key) => {
                         if (key != "openfda")
-                          //ignore, cause displayed
                           return (
                             <option key={key} value={key}>
                               {key}
@@ -76,10 +112,7 @@ class AddMedicine extends Component {
                 </div>
               </div>
               {this.props.allMedicineInfo && (
-                <div
-                  className="row"
-                  style={{  marginTop: 10 }}
-                >
+                <div className="row" style={{ marginTop: 10 }}>
                   <div className="col-sm-offset-1 col-sm-11">
                     <p style={{ padding: 10 }}>
                       {
@@ -94,28 +127,30 @@ class AddMedicine extends Component {
             </div>
           </div>
           <div className="col-sm-7">
-            <AddEditMedicineFields />
-            <div className="row" style={{ paddingTop: 20 }}>
-              <Button type="submit" bsStyle="success" className="pull-right">
-                Save
-              </Button>
-              <Button
-                className="pull-right right-margin"
-                bsStyle="primary"
-                componentClass={Link}
-                to={`/Patient/${this.props.match.params.patientId}`}
-              >
-                Patient Details
-              </Button>
-              <Button
-                to="/MainMenu"
-                bsStyle="danger"
-                className="pull-right margin-right"
-                componentClass={Link}
-              >
-                Main Menu
-              </Button>
-            </div>
+            <form onSubmit={this.props.handleSubmit(this.onSubmit.bind(this))}>
+              <AddEditMedicineFields />
+              <div className="row" style={{ paddingTop: 20 }}>
+                <Button type="submit" bsStyle="success" className="pull-right">
+                  Save
+                </Button>
+                <Button
+                  className="pull-right right-margin"
+                  bsStyle="primary"
+                  componentClass={Link}
+                  to={`/Patient/${this.props.match.params.patientId}`}
+                >
+                  Patient Details
+                </Button>
+                <Button
+                  to="/MainMenu"
+                  bsStyle="danger"
+                  className="pull-right margin-right"
+                  componentClass={Link}
+                >
+                  Main Menu
+                </Button>
+              </div>
+            </form>
           </div>
         </div>
       </div>
@@ -124,14 +159,14 @@ class AddMedicine extends Component {
 }
 
 const mapStateToProps = state => {
-  if (state.patients.patientDetails && state.medicine[0]) {
-    let { Patient } = state.patients.patientDetails;
-    let { openfda } = state.medicine[0];
+  if (state.patients.patientDetails && state.medicine.medicineDetails) {
+    let { patientDetails } = state.patients;
+    let { openfda } = state.medicine.medicineDetails;
 
     return {
-      patientId: Patient.patientId,
-      fullName: Patient.FirstName + " " + Patient.LastName,
-      allMedicineInfo: state.medicine[0],
+      patientId: patientDetails.patientId,
+      fullName: patientDetails.fullName,
+      allMedicineInfo: state.medicine.medicineDetails,
       ndc: openfda.package_ndc,
       brandName: openfda.brand_name,
       genericName: openfda.generic_name,
@@ -144,13 +179,12 @@ const mapStateToProps = state => {
 
 function validate(values) {
   let errors = {};
-  console.log("Validate values", values);
 
   // let scheduledTimesArrayErrors = [];
   // scheduledTimesArrayErrors[0] = "errorTest";
   // scheduledTimesArrayErrors[1] = "error two";
-  errors.scheduledTimes = [];
-  errors.scheduledTimes[0] = "Invalidations";
+  // errors.scheduledTimes = [];
+  // errors.scheduledTimes[0] = "Invalidations";
 
   return errors;
 }
@@ -158,4 +192,9 @@ function validate(values) {
 export default reduxForm({
   form: "AddMedicine",
   validate
-})(connect(mapStateToProps, { getPatient, searchOpenFDA })(AddMedicine));
+})(
+  connect(
+    mapStateToProps,
+    { getPatient, searchOpenFDA, savePrescription }
+  )(AddMedicine)
+);

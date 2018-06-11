@@ -2,33 +2,13 @@ import React, { Component } from "react";
 import { Field, FieldArray, reduxForm, formValueSelector } from "redux-form";
 import { Button, ButtonGroup, Alert } from "react-bootstrap";
 import { connect } from "react-redux";
+import moment from 'moment';
 
-const times = [
-  "12:00 AM",
-  "1:00 AM",
-  "2:00 AM",
-  "3:00 AM",
-  "4:00 AM",
-  "5:00 AM",
-  "6:00 AM",
-  "7:00 AM",
-  "8:00 AM",
-  "9:00 AM",
-  "10:00 AM",
-  "11:00 AM",
-  "12:00 PM",
-  "1:00 PM",
-  "2:00 PM",
-  "3:00 PM",
-  "4:00 PM",
-  "5:00 PM",
-  "6:00 PM",
-  "7:00 PM",
-  "8:00 PM",
-  "9:00 PM",
-  "10:00 PM",
-  "11:00 PM"
-];
+let times = [];
+for (let i = 0; i < 24; i++ ){
+  times.push(moment().hour(i).minute(0).seconds(0))
+}
+console.log(times);
 
 const REGULAR = "R",
   TAPER = "T",
@@ -67,8 +47,8 @@ class Alerts extends Component {
             </option>
             {times.map(time => {
               return (
-                <option key={time} value={time}>
-                  {time}
+                <option key={time} value={time.format()}>
+                  {time.format("h:mm A")}
                 </option>
               );
             })}
@@ -110,6 +90,7 @@ class Alerts extends Component {
           <label>
             Doses per day:
             <input
+              id="dosesPerDay"
               value={dosesPerDay}
               type="number"
               onChange={this.onDosesPerDayChange.bind(this)}
@@ -121,7 +102,7 @@ class Alerts extends Component {
         <div>
           <FieldArray
             label="Scheduled Times"
-            name="scheduledTimes"
+            name="scheduledAlerts"
             component={this.renderRegularAlertsFiled}
             numberOfFields={dosesPerDay}
           />

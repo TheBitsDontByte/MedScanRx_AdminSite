@@ -14,6 +14,7 @@ const initialState = {
   noSuccess: false,
   patientDetails: null,
   noResults: false,
+  errors: null
 }
 
 
@@ -32,8 +33,8 @@ export default function(state = initialState, action) {
     case GET_PATIENT_ERROR:
     case SAVE_PATIENT_ERROR:
     case UPDATE_PATIENT_ERROR:
-      console.log("err in redu");
-      return {...state, noSuccess: true };
+      console.log("err in redu", action);
+      return {...state, noSuccess: true, errors: action.payload };
     case CLEAR_PATIENT_DATA:
       return {};
     default:
