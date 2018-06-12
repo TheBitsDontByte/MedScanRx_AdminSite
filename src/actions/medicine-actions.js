@@ -37,7 +37,7 @@ export function savePrescription(postData, navigationCallback) {
           type: SAVE_PRESCRIPTION,
         })
         if(navigationCallback)
-          navigationCallback("/Patient/"+postData.patientId);
+          navigationCallback("/Patient/"+postData.patientId); 
       }
     })
     .catch(response => {
