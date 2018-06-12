@@ -1,5 +1,6 @@
 import React from "react";
 import { Field } from "redux-form";
+import _ from "lodash";
 
 import Alerts from "../Medicine/Alerts";
 
@@ -20,11 +21,24 @@ const renderField = field => {
   );
 };
 
-const AddEditMedicineFields = () => {
+const AddEditMedicineFields = props => {
+  console.log(props);
   return (
     <div>
       <h3>Medicine Details</h3>
       <div className="col-sm-offset-1 col-sm-11">
+        <div className="col-sm-6 form-group">
+          <label>NDC:</label>
+          <Field name="ndc" className="form-control" component="select">
+            <option hidden value="">
+              Select the correct NDC...
+            </option>
+            {_.map(props.ndc, ndc => {
+              return <option value={ndc}>{ndc}</option>;
+            })}
+          </Field>
+        </div>
+        <div className="row" />
         <div className="col-sm-6">
           <Field
             type="text"
@@ -89,8 +103,8 @@ const AddEditMedicineFields = () => {
         </div>
       </div>
       <h3>Scheduled Alerts</h3>
-        <div className="col-sm-offset-1 col-sm-11">
-          <Alerts />
+      <div className="col-sm-offset-1 col-sm-11">
+        <Alerts />
       </div>
     </div>
   );

@@ -35,7 +35,7 @@ class AddMedicine extends Component {
       if (i % dosesPerDay == 0) day++;
       let nextAlert = moment(scheduledAlerts[i % dosesPerDay])
         .add(day, "day")
-        .toString();
+        .format("YYYYMMDD HH:mm:ss");
 
       allAlerts.push(nextAlert);
     }
@@ -50,18 +50,22 @@ class AddMedicine extends Component {
         values.scheduledAlerts,
         values.originalNumberOfDoses
       ),
-      ndc: this.props.ndc[0],
       patientId: this.props.patientId,
       brandName: this.props.brandName[0],
       genericName: this.props.genericName[0]
     };
 
     console.log("Values on submit", postData);
-    this.props.savePrescription(postData);
+    this.props.savePrescription(postData, this.props.history.push);
   }
 
   render() {
     console.log("Render state in add", this.state);
+
+    if (!this.props.patientId && !this.props.ndc)
+    return (
+      <div>Loading... (fix me)</div>
+    )
     return (
       <div className="row">
         <h1>
@@ -128,7 +132,7 @@ class AddMedicine extends Component {
           </div>
           <div className="col-sm-7">
             <form onSubmit={this.props.handleSubmit(this.onSubmit.bind(this))}>
-              <AddEditMedicineFields />
+              <AddEditMedicineFields ndc={this.props.ndc}/>
               <div className="row" style={{ paddingTop: 20 }}>
                 <Button type="submit" bsStyle="success" className="pull-right">
                   Save

@@ -28,15 +28,16 @@ export function searchOpenFDA(postData, navigationCallback) {
   };
 }
 
-export function savePrescription(postData) {
+export function savePrescription(postData, navigationCallback) {
   return dispatch => {
     axios.post(`${BASE_URL}/Api/Prescription/Save`, postData)
     .then(response => {
       if (response.status == 200) {
         dispatch({
           type: SAVE_PRESCRIPTION,
-
         })
+        if(navigationCallback)
+          navigationCallback("/Patient/"+postData.patientId);
       }
     })
     .catch(response => {
