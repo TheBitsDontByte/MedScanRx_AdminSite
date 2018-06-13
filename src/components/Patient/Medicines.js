@@ -1,4 +1,5 @@
 import React from 'react';
+import _ from 'lodash';
 
 const Medicines = props => {
     return (
@@ -12,24 +13,16 @@ const Medicines = props => {
           </tr>
         </thead>
         <tbody>
-          <tr>
-            <th scope="row">Tylenol</th>
-            <td>200mg</td>
-            <td>Once Daily</td>
-            <td>123</td>
-          </tr>
-          <tr>
-            <th scope="row">Benadryl</th>
-            <td>15mg</td>
-            <td>Every 4 hours</td>
-            <td>234</td>
-          </tr>
-          <tr>
-            <th scope="row">Vicodin</th>
-            <td>5mg</td>
-            <td>Every 6 hours</td>
-            <td>333</td>
-          </tr>
+          {_.map(props.prescriptionDetail, (detail) => {
+            return (
+              <tr>
+                <td>{detail.brandName}</td>
+                <td>{detail.dosage}</td>
+                <td>{detail.nextAlert}</td>
+                <td>{detail.ndc}</td>
+                </tr>
+            )
+          })}
         </tbody>
       </table>
 

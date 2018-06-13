@@ -7,6 +7,7 @@ export const CLEAR_MEDICINE_DATA = "clear_medicine_data";
 export const NO_RESULTS = "no_results";
 export const SELECT_RESULT = "select_result";
 export const SAVE_PRESCRIPTION = "save_prescription";
+export const GET_PRESCRIPTIONS = "get_prescriptions";
 
 export function searchOpenFDA(postData, navigationCallback) {
   return dispatch => {
@@ -52,6 +53,22 @@ export function selectOpenFdaResult(selection) {
     payload: selection
   }
 }
+
+export function getPrescriptions (patientId) {
+  return dispatch => {
+    axios.get(`${BASE_URL}/Api/Prescription/Prescriptions/${patientId}`)
+      .then(response => {
+        console.log("Response for get all prescrip", response)
+        dispatch({
+          type: GET_PRESCRIPTIONS,
+          payload: response.data
+        })
+      })
+      .catch(response => {
+        console.log("Need error handling all up in prescriptions :\\")
+      })
+  }
+} 
 
 export function clearMedicineData() {
   return {
