@@ -15,7 +15,7 @@ const Medicines = props => {
         <tbody>
           {_.map(props.prescriptionDetail, (detail) => {
             return (
-              <tr>
+              <tr onClick={() => props.onPrescriptionClick(detail.prescriptionId)}>
                 <td>{detail.brandName}</td>
                 <td>{detail.dosage}</td>
                 <td>{detail.nextAlert}</td>
@@ -23,7 +23,7 @@ const Medicines = props => {
                 </tr>
             )
           })}
-        </tbody>
+        </tbody> 
       </table>
 
         

@@ -11,6 +11,12 @@ import { getPrescriptions } from '../../actions/medicine-actions';
 
 
 class PatientDetail extends Component {
+  constructor() {
+    super()
+
+    this.onPrescriptionClick = this.onPrescriptionClick.bind(this);
+  }
+
   componentWillMount() {
     window.scrollTo(0,0);    
     this.props.getPatient(this.props.match.params.patientId);    
@@ -18,6 +24,9 @@ class PatientDetail extends Component {
     
   }
   
+  onPrescriptionClick(prescriptionId) {
+    this.props.history.push(`/Patient/${this.props.patientDetail.patientId}/EditPrescription/${prescriptionId}`)
+  }
 
 
   render() {
@@ -54,7 +63,6 @@ class PatientDetail extends Component {
               </Button>
             </div>
             <PatientInfo
-              // ContactInfo={ContactInfo}
               patientDetail={patientDetail}
               isOneColumn={true}
             />
@@ -73,7 +81,7 @@ class PatientDetail extends Component {
                     Add Medicine
               </Button>
             </div>
-            <Medicines  prescriptionDetail={this.props.prescriptionDetail}/>
+            <Medicines  onPrescriptionClick={this.onPrescriptionClick} prescriptionDetail={this.props.prescriptionDetail}/>
             
           </div>
         </div>

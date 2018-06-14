@@ -70,6 +70,18 @@ export function getPrescriptions (patientId) {
   }
 } 
 
+export const getPrescriptionDetail = (prescriptionId) => {
+  return dispatch => {
+    axios.get(`${BASE_URL}/Api/Prescription/Prescription/${prescriptionId}`)
+    .then(response => {
+      console.log("The response from getPrescriptionDetail", response)
+    })
+    .catch(response => {
+      console.log("hurr durr Im an error and need to be handled", response)
+    })
+  }
+}
+
 export function clearMedicineData() {
   return {
     type: CLEAR_MEDICINE_DATA

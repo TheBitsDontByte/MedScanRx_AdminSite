@@ -4,13 +4,10 @@ import { connect } from 'react-redux';
 import { clearData } from '../actions/patient-actions';
 import { Button } from 'react-bootstrap';
 
-import Add from '../media/Add.png';
-import Search from '../media/Search.png';
 
 class MainMenu extends Component {
     
     componentWillMount() {
-        console.log("Props", this.props)
         this.props.clearData();
     }
 

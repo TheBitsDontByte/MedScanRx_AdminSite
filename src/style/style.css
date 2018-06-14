@@ -67,3 +67,8 @@ a {
     cursor: pointer;
     background-color: rgba(163, 189, 230, 0.3);
  }
+
+ tr:hover td {
+    cursor: pointer;
+    background-color: rgba(157, 186, 233, 0.322);
+ }
