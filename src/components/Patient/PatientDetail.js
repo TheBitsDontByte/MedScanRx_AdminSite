@@ -24,10 +24,12 @@ class PatientDetail extends Component {
     
   }
   
-  onPrescriptionClick(prescriptionId) {
-    this.props.history.push(`/Patient/${this.props.patientDetail.patientId}/EditPrescription/${prescriptionId}`)
+  onPrescriptionClick(prescriptionId, ndc) {
+    this.props.history.push({
+      pathname: `/Patient/${this.props.patientDetail.patientId}/EditPrescription/${prescriptionId}`,
+      state: {ndc: ndc}
+    })
   }
-
 
   render() {
     if (this.props.noResults){
@@ -35,13 +37,13 @@ class PatientDetail extends Component {
         <h1>Couldn't find a patient with Patient ID {this.props.match.params.patientId}</h1>
       )
     }
-    if (!this.props.patientDetail || !this.props.prescriptionDetail) {
+    if (!this.props.patientDetail || !this.props.prescriptionsDetail) {
       return (
         <div>Loading...</div>
       )
     }
 
-    console.log("Detail before info", this.props.patientDetail)
+    console.log("Detail before info", this.props)
     const patientDetail = this.props.patientDetail;
     return (
       <div>
@@ -81,7 +83,7 @@ class PatientDetail extends Component {
                     Add Medicine
               </Button>
             </div>
-            <Medicines  onPrescriptionClick={this.onPrescriptionClick} prescriptionDetail={this.props.prescriptionDetail}/>
+            <Medicines onPrescriptionClick={this.onPrescriptionClick} prescriptionsDetail={this.props.prescriptionsDetail}/>
             
           </div>
         </div>
@@ -104,7 +106,7 @@ function mapStateToProps(state, ownProps) {
   console.log("Mapstatetoprops in details", state);
   return { 
     patientDetail: state.patients.patientDetails,
-    prescriptionDetail: state.medicine.prescriptionDetail,
+    prescriptionsDetail: state.medicine.prescriptionsDetail,
     noResults: state.patients.noResults
   }
 }

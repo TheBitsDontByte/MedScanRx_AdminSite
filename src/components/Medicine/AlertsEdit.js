@@ -23,6 +23,7 @@ class Alerts extends Component {
       showTaper: false,
       showInterval: false,
       showOptional: false,
+      numberOfAlerts: 3
       
     };
 
@@ -79,32 +80,26 @@ class Alerts extends Component {
 
   onDosesPerDayChange(event) {
     if (event.target.value > 9 || event.target.value < 1) return;
-    this.setState({ dosesPerDay: event.target.value });
+    this.setState({ numberOfAlerts: event.target.value });
   }
 
   render() {
-    const { numberOfDoses } = this.props;
+    const { numberOfAlerts } = this.state;
+    console.log("Doses per day in render", numberOfAlerts)
     return (
       <div>
         <div className="col-sm-12 form-inline">
           <label>
             Doses per day:
-            <Field
-              component="input"
-              type="number"
-              className="form-control"
-              name="dosesPerDay"
-              style={{ marginLeft: 10, width: 75 }}
-              onChange={this.onDosesPerDayChange.bind(this)}
-            />
-            {/* <input
+            <input
               id="dosesPerDay"
-              value={dosesPerDay}
+              defaultValue={numberOfAlerts}
               type="number"
               onChange={this.onDosesPerDayChange.bind(this)}
               style={{ marginLeft: 10, width: 75 }}
               className="form-control"
-            /> */}
+             
+            />
           </label>
         </div>
         <div>
@@ -112,7 +107,7 @@ class Alerts extends Component {
             label="Scheduled Times"
             name="scheduledAlerts"
             component={this.renderRegularAlertsFiled}
-            numberOfFields={numberOfDoses}
+            numberOfFields={numberOfAlerts}
           />
         </div>
       </div>
@@ -124,9 +119,4 @@ class Alerts extends Component {
 //   form: "AddMedicine"
 // })(Alerts)
 
-const selector = formValueSelector("AddMedicine");
-
-export default connect(state => {
-  const numberOfDoses = selector(state, "dosesPerDay") || 3;
-  return { numberOfDoses, initialValues: {dosesPerDay: numberOfDoses} };
-})(reduxForm({form: "AddMedicine"})(Alerts));
+export default connect()(reduxForm({form: "EditMedicine", destroyOnUnmount: false})(Alerts));

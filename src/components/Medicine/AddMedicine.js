@@ -27,8 +27,7 @@ class AddMedicine extends Component {
     this.setState({ selectedAdditionalDetail: event.target.value });
   }
 
-  calculateAlerts(scheduledAlerts, originalNumberOfDoses) {
-    let dosesPerDay = document.getElementById("dosesPerDay").value;
+  calculateAlerts(scheduledAlerts, originalNumberOfDoses, dosesPerDay) {
     let allAlerts = [];
     let day = 0;
     for (let i = 0; i < originalNumberOfDoses; i++) {
@@ -48,7 +47,8 @@ class AddMedicine extends Component {
       ...values,
       scheduledAlerts: this.calculateAlerts(
         values.scheduledAlerts,
-        values.originalNumberOfDoses
+        values.originalNumberOfDoses,
+        values.dosesPerDay
       ),
       patientId: this.props.patientId,
       brandName: this.props.brandName[0],
