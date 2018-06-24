@@ -4,11 +4,17 @@ import { Link, Prompt } from "react-router-dom";
 import { connect } from "react-redux";
 import { Button } from "react-bootstrap";
 
-import { updatePatient, getPatient } from "../../actions/patient-actions";
+import {
+  updatePatient,
+  getPatient,
+  clearErrors
+} from "../../actions/patient-actions";
 
 import AddEditFields from "../shared/AddEditFields";
 import EditPatientConfirmModal from "../Patient/AddPatientConfirmModal";
 import AddPatientConfirmModal from "../Patient/AddPatientConfirmModal";
+import ErrorBanner from '../shared/ErrorBanner';
+import { validateAddEditFields } from "../shared/Validate";
 
 class EditPatient extends Component {
   constructor() {
@@ -19,7 +25,8 @@ class EditPatient extends Component {
   }
 
   onSubmit(event) {
-    console.log("The values in event", event)
+    this.props.clearErrors();
+
     this.setState({
       patientDetails: {
         patientId: this.props.patientId,
@@ -27,21 +34,19 @@ class EditPatient extends Component {
         lastName: event.lastName,
         dateOfBirth: event.dateOfBirth,
         gender: event.gender,
-        contactInfoId: this.props.contactInfoId,
         email: event.email,
         phone1: event.phone1,
-        phone2: event.phone2,
-        preferredPhysician: event.preferredPhysician,
-        preferredHospital: event.preferredHospital,
-        emergencyContactName: event.emergencyContactName,
-        emergencyContactRelation: event.emergencyContactRelation,
-        emergencyContactPhone: event.emergencyContactPhone
+        phone2: event.phone2 ? event.phone2 : null,
+        preferredPhysician: event.preferredPhysician ? event.preferredPhysician : null,
+        preferredHospital: event.preferredHospital ? event.preferredHospital : null,
+        emergencyContactName: event.emergencyContactName ? event.emergencyContactName : null,
+        emergencyContactRelation: event.emergencyContactRelation ? event.emergencyContactRelation : null,
+        emergencyContactPhone: event.emergencyContactPhone ? event.phone2 : null
       },
       showModal: true
     });
 
-    console.log("PatientDetails", this.state.patientDetails)
-    
+    console.log("PatientDetails", this.state.patientDetails);
   }
 
   updatePatient() {
@@ -61,14 +66,12 @@ class EditPatient extends Component {
   }
 
   render() {
+    console.log("Props in edits render", this.props);
 
-    console.log("Props in edits render", this.props )
-
-    const { handleSubmit, noSuccess } = this.props;
+    const { handleSubmit, noSuccess, errors } = this.props;
     return (
       <div className="row">
-      {/* OMG FIX THIS HERE AND IN ADD PATIENTS< MAKE A REALL BANNER MODAL THINGY  */}
-      {noSuccess ? <div>Herp derp im an error fix me im so dumb here</div> : null}
+        {noSuccess ? <ErrorBanner errors={errors} /> : null}
         <h1>Edit Patient Information</h1>
         <form onSubmit={handleSubmit(this.onSubmit.bind(this))}>
           <AddEditFields initialValues={this.props.initialValues} />
@@ -103,7 +106,10 @@ class EditPatient extends Component {
           />
         )}
         <Prompt
-          when={(!this.state.willSubmit && !this.props.pristine) || this.props.noSuccess == true  }
+          when={
+            (!this.state.willSubmit && !this.props.pristine) ||
+            this.props.noSuccess == true
+          }
           message={"Navigating away will clear all your changes. Continue ?"}
         />
       </div>
@@ -112,47 +118,17 @@ class EditPatient extends Component {
 }
 
 function validate(values) {
-  const errors = {};
-
-  if (!values.firstName) errors.firstName = "First Name is required";
-  if (values.firstName && values.firstName.length > 50) errors.firstName = "First Name must be less than 50 characters";
-
-  if (!values.lastName) errors.lastName = "Last Name is required";
-  if (values.lastName && values.lastName.length > 50 ) errors.lastName = "Last Name must be less than 50 characters"
-
-  if (!values.dateOfBirth) errors.dateOfBirth = "Date of birth is required";
-
-  if (!values.gender) errors.gender = "Please select a gender";
-
-  if (!values.email) errors.email = "Email is required";
-
-  if (!values.phone1) errors.phone1 = "Primary Phone Number is required";
-  if (values.phone1 && values.phone1.length > 10) errors.phone1 = "Primary Phone Number must be 10 numeric characters";
-
-  if (values.phone2 && values.phone2.length > 10) errors.phone2 = "Secondary Phone Number must be 10 numeric characters";
-
-  if (values.preferredPhysician && values.preferredPhysician.length > 100) errors.preferredPhysician = "Preferred Physician must be less then 100 characters"
-
-  if (values.preferredHospital && values.preferredHospital.length > 50) errors.preferredHospital = "Preferred Hospital must be less then 50 characters"
-  
-  if (values.emergencyContactName && values.emergencyContactName.length > 100) errors.emergencyContactName = "Emergency Contact Name must be less than 100 characters";
-
-  if (values.emergencyContactRelation && values.emergencyContactRelation.length > 25) errors.emergencyContactRelation = "Emergency Contact Relation must be less than 25 characters";
-
-  if (values.emergencyContactPhone && values.emergencyContactPhone.length > 10) errors.emergencyContactPhone = "Emergency Contact Phone must be 10 numeric characters";
-  
-  return errors;
+  return validateAddEditFields(values);
 }
 
 function mapStateToProps(state, ownProps) {
-  var { patientDetails, noSuccess } = state.patients;
-  console.log("MapState for edit", patientDetails, noSuccess)
-  if (!patientDetails) 
-    return {noSuccess};
+  var { patientDetails, noSuccess, errors } = state.patients;
+  if (!patientDetails) return { noSuccess, errors };
 
   return {
-    noSuccess: noSuccess,
+    noSuccess,
     patientId: patientDetails.patientId,
+    errors,
     initialValues: {
       firstName: patientDetails.firstName,
       lastName: patientDetails.lastName,
@@ -170,11 +146,9 @@ function mapStateToProps(state, ownProps) {
   };
 }
 
-
-
 export default connect(
   mapStateToProps,
-  { updatePatient, getPatient }
+  { updatePatient, getPatient, clearErrors }
 )(
   reduxForm({
     validate,

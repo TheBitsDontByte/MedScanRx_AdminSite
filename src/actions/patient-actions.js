@@ -1,14 +1,16 @@
 import axios from "axios";
-import { BASE_URL } from "../globals";
+import { BASE_URL, NETWORK_ERROR_MESSAGE } from "../globals";
 
 export const UPDATE_PATIENT = "edit_patient";
 export const CLEAR_PATIENT_DATA = "clear_patient_data";
 export const GET_PATIENT = "get_patient";
 export const SAVE_PATIENT = "save_patient";
-export const NO_RESULTS = "no_results";
+
 export const GET_PATIENT_ERROR = "get_patient_error";
 export const UPDATE_PATIENT_ERROR = "update_patient_error";
 export const SAVE_PATIENT_ERROR = "save_patient_error";
+export const CLEAR_PATIENT_ERRORS = "clear_patient_errors";
+export const SEARCHING = "searching";
 
 export function savePatient(postData, navigationCallback) {
   return dispatch => {
@@ -19,13 +21,14 @@ export function savePatient(postData, navigationCallback) {
       headers: { "Content-Type": "application/json; charset=utf-8" }
     })
       .then(response => {
-        if (response.status >= 200 && response.status < 300)
-          navigationCallback("/Patient/" + response.data.patientId);
+        navigationCallback("/Patient/" + response.data.patientId);
       })
-      .catch((error) => {
-        error = error.response ? error.response.data : "Something went very wrong";
-        dispatch({ type: SAVE_PATIENT_ERROR, payload: error })
-      }); 
+      .catch(error => {
+        let errorMessages = error.response
+          ? error.response.data.errors
+          : NETWORK_ERROR_MESSAGE;
+        dispatch({ type: SAVE_PATIENT_ERROR, payload: errorMessages });
+      });
   };
 }
 
@@ -34,49 +37,38 @@ export function getPatient(patientId, navigationCallback) {
     axios
       .get(BASE_URL + "/api/Patient/" + patientId)
       .then(response => {
-        if (response.status == 200) {
-          navigationCallback ? navigationCallback() : null;
-          dispatch({
-            type: GET_PATIENT,
-            payload: response.data
-          });
-        } else if (response.status == 204) {
-          dispatch({ type: NO_RESULTS });
-        }
+        navigationCallback ? navigationCallback() : null;
+        dispatch({
+          type: GET_PATIENT,
+          payload: response.data
+        });
       })
-      .catch(() => {
-        dispatch({ type: GET_PATIENT_ERROR });
+      .catch(error => {
+        let errorMessages = error.response
+          ? error.response.data.errors
+          : NETWORK_ERROR_MESSAGE;
+        dispatch({ type: GET_PATIENT_ERROR, payload: errorMessages });
       });
   };
 }
 
 export function updatePatient(putData, navigationCallback) {
-  //Need axios call
   return dispatch => {
     axios
       .put(BASE_URL + "/api/Patient/UpdatePatient", putData)
       .then(response => {
-        if (response.status == 200) {
-          console.log("response in action", response);
-
-          dispatch({
-            type: UPDATE_PATIENT
-          });
-          if (navigationCallback)
-            navigationCallback("/Patient/" + response.data.patientId);
-        }
-      })
-      .catch(() => {
         dispatch({
-          type: UPDATE_PATIENT_ERROR
+          type: UPDATE_PATIENT
         });
+        if (navigationCallback)
+          navigationCallback("/Patient/" + response.data.patientId);
+      })
+      .catch(error => {
+        let errorMessages = error.response
+          ? error.response.data.errors
+          : NETWORK_ERROR_MESSAGE;
+        dispatch({ type: UPDATE_PATIENT_ERROR, payload: errorMessages });
       });
-  };
-
-  console.log("In dat update patient boooooi");
-  return {
-    type: UPDATE_PATIENT,
-    payload: putData
   };
 }
 
@@ -85,3 +77,15 @@ export function clearData() {
     type: CLEAR_PATIENT_DATA
   };
 }
+
+export function clearErrors() {
+  return {
+    type: CLEAR_PATIENT_ERRORS
+  };
+}
+
+export const searching = () => {
+  return {
+    type: SEARCHING
+  };
+};

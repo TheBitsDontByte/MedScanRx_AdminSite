@@ -1,17 +1,15 @@
 import React, { Component } from "react";
 import { Field, reduxForm } from "redux-form";
 import { connect } from "react-redux";
-import { Button } from "react-bootstrap";
+import { Button, Thumbnail } from "react-bootstrap";
 import { Link } from "react-router-dom";
 
 import {
-  searchOpenFDA,
+  searchRxImage,
   selectOpenFdaResult,
   clearMedicineData
 } from "../../actions/medicine-actions";
 
-//TEMP
-import axios from "axios";
 import _ from "lodash";
 
 class SearchMedicine extends Component {
@@ -40,7 +38,6 @@ class SearchMedicine extends Component {
   }
 
   renderSearchResults() {
-    console.log("RSR boyo", this.props);
     const { searchResults, noResults } = this.props;
     if (noResults)
       return (
@@ -56,35 +53,26 @@ class SearchMedicine extends Component {
         </h4>
       );
     else if (searchResults) {
+      console.log("RSR BOYO results", searchResults)
       return (
         <div>
           <h4 className="text-center"> Search Results</h4>
           {_.map(
-            searchResults,
-            ({
-              openfda: {
-                package_ndc,
-                brand_name,
-                generic_name,
-                manufacturer_name
-              }
-            }, index) => {
+            searchResults.nlmRxImages,
+            ({ rxcui, ndc11, name, imageUrl }, index) => {
               return (
-                <li
-                  className="list-group-item"
+                <div
+                  className="col-md-4"
                   onClick={() => this.handleSearchResultClick(index)}
-                  key={package_ndc}
+                  key={ndc11}
                 >
-                  <strong>NDC:</strong>{" "}
-                  {_.map(package_ndc, ndc => {
-                    return ndc + ", ";
-                  })}
+                  <strong>NDC:</strong>{ndc11}
                   <br />
-                  <strong>Brand Name:</strong> {brand_name}
+                  <strong>Name:</strong> {name}
                   <br />
-                  <strong>Generic Name:</strong> {generic_name} <br />
-                  <strong>Manufacturer: </strong> {manufacturer_name}
-                </li>
+                  <strong>RxCUI:</strong> {rxcui} <br />
+                  <Thumbnail src={imageUrl} responsive  />
+                </div>
               );
             }
           )}{" "}
@@ -94,18 +82,19 @@ class SearchMedicine extends Component {
   }
 
   handleSearchResultClick(index) {
+
     let { patientId } = this.props.match.params;
     this.props.selectOpenFdaResult(this.props.searchResults[index]);
     this.props.history.push(`/Patient/${patientId}/AddMedicine`);
   }
 
   handleSearchSubmit(event) {
+    this.props.clearMedicineData();
     let postData = {
-      ndc: event.ndc,
-      brandName: event.brandName,
-      genericName: event.genericName
+      ndc: event.ndc ? event.ndc.trim() : null,
+      name: event.name ? event.name.trim() : null
     };
-    this.props.searchOpenFDA(postData);
+    this.props.searchRxImage(postData);
   }
 
   render() {
@@ -121,18 +110,13 @@ class SearchMedicine extends Component {
           >
             <Field
               component={this.renderField}
-              label="NDC Number:"
+              label="Medicine NDC Number:"
               name="ndc"
             />
             <Field
               component={this.renderField}
-              label="Brand Name:"
-              name="brandName"
-            />
-            <Field
-              component={this.renderField}
-              label="Generic Name: "
-              name="genericName"
+              label="Medicine Name:"
+              name="name"
             />
             <Button type="submit" bsStyle="primary" className="pull-right">
               Search
@@ -178,6 +162,6 @@ export default reduxForm({
 })(
   connect(
     mapStateToProps,
-    { searchOpenFDA, clearMedicineData, selectOpenFdaResult }
+    { searchRxImage, clearMedicineData, selectOpenFdaResult }
   )(SearchMedicine)
 );

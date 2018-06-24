@@ -3,40 +3,44 @@ import {
   SAVE_PATIENT,
   UPDATE_PATIENT,
   CLEAR_PATIENT_DATA,
-  NO_RESULTS,
   GET_PATIENT_ERROR,
   SAVE_PATIENT_ERROR,
-  UPDATE_PATIENT_ERROR
+  UPDATE_PATIENT_ERROR,
+  CLEAR_PATIENT_ERRORS,
+  SEARCHING
 } from "../actions/patient-actions";
 
-
 const initialState = {
-  noSuccess: false,
+  noSuccess: null,
   patientDetails: null,
-  noResults: false,
-  errors: null
-}
 
+  errors: null,
+  isSearching: null
+};
 
 export default function(state = initialState, action) {
   switch (action.type) {
     case GET_PATIENT:
       return { patientDetails: action.payload };
     case SAVE_PATIENT:
-       console.log("in redu save patient no error ?", action);
-    
       return { patientDetails: action.payload.data.Data.Patient };
     case UPDATE_PATIENT:
-      return {...state, noSuccess: false}
-    case NO_RESULTS:
-      return { noResults: true };
+      return { ...state, noSuccess: null, isSearching: null };
     case GET_PATIENT_ERROR:
     case SAVE_PATIENT_ERROR:
     case UPDATE_PATIENT_ERROR:
-      console.log("err in redu", action);
-      return {...state, noSuccess: true, errors: action.payload };
+      return {
+        ...state,
+        noSuccess: true,
+        errors: action.payload,
+        isSearching: null
+      };
     case CLEAR_PATIENT_DATA:
-      return {};
+      return initialState;
+    case CLEAR_PATIENT_ERRORS:
+      return { ...state, noSuccess: null, errors: null, isSearching: null };
+    case SEARCHING:
+      return { isSearching: true };
     default:
       return state;
   }

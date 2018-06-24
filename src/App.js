@@ -15,7 +15,7 @@ import MainMenu from "./components/MainMenu";
 import AddPatient from "./components/Patient/AddPatient";
 import EditPatient from "./components/Patient/EditPatient";
 import PatientDetail from "./components/Patient/PatientDetail";
-import AllPatientSearch from "./components/Search/AllPatientSearch";
+import AllPatientSearch from "./components/Patient/AllPatientSearch";
 import SearchMedicine from "./components/Medicine/SearchMedicine";
 import AddMedicine from "./components/Medicine/AddMedicine";
 import RedirectPage from "./components/RedirectPage";

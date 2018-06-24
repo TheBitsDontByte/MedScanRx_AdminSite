@@ -3,9 +3,11 @@ import { Field, reduxForm } from "redux-form";
 import { Link } from "react-router-dom";
 import { connect } from "react-redux";
 import { Button } from "react-bootstrap";
-import moment from 'moment';
+import moment from "moment";
+import _ from "lodash";
 
-import { getPatient } from "../../actions/patient-actions";
+import { getPatient, searching } from "../../actions/patient-actions";
+import { maxLength8 } from "../shared/Validate";
 
 class AllPatientSearch extends React.Component {
   handlePatientClick(patientId) {
@@ -15,22 +17,23 @@ class AllPatientSearch extends React.Component {
   }
 
   renderMatchingPatients() {
-    console.log("On search page, renderMATCHINGPatients: props=", this.props)
+    console.log("On search page, renderMATCHINGPatients: props=", this.props);
+    if (this.props.isSearching)
+      return <h4 className="patient-search-info-box">Searching ...</h4>;
+
     if (this.props.noSuccess)
       return (
-        <h4 style={{ padding: 50 }} className="text-center text-danger">
-          Something went wrong :\ Please try your search again
-        </h4>
-      );
-    if (this.props.noResults)
-      return (
-        <h4 className="text-danger text-center">
-          No Patient Found with that Patient ID
+        <h4 className="patient-search-info-box text-danger">
+          {typeof this.props.errors == "string"
+            ? this.props.errors
+            : _.map(this.props.errors, error => {
+                return <div className="row">{error}</div>;
+              })}
         </h4>
       );
     if (!this.props.patientDetails)
       return (
-        <h4 style={{ padding: 50 }} className="text-center">
+        <h4 className="patient-search-info-box">
           Enter a Patient ID and Search ...
         </h4>
       );
@@ -45,10 +48,12 @@ class AllPatientSearch extends React.Component {
           className="list-group-item"
           onClick={() => this.handlePatientClick(patientDetails.patientId)}
         >
-          <strong>Name:</strong> {patientDetails.firstName + " " + patientDetails.lastName} <br />
+          <strong>Name:</strong>{" "}
+          {patientDetails.firstName + " " + patientDetails.lastName} <br />
           <strong>PatientId:</strong> {patientDetails.patientId} <br />
           {/* <strong>Date of Birth:</strong> {moment(Patient.DateOfBirth, "MM/dd/yyyy")} */}
-          <strong>Date of Birth:</strong> {moment(patientDetails.dateOfBirth).toString()}
+          <strong>Date of Birth:</strong>{" "}
+          {moment(patientDetails.dateOfBirth).toString()}
         </li>
       </div>
     );
@@ -77,11 +82,12 @@ class AllPatientSearch extends React.Component {
   }
 
   handleSearchClick() {
+    this.props.searching();
     this.props.getPatient(this.state.patientId);
   }
 
   render() {
-    const { handleSubmit } = this.props;
+    const { handleSubmit, isSearching } = this.props;
     return (
       <div>
         <div className="row">
@@ -99,8 +105,14 @@ class AllPatientSearch extends React.Component {
                 label="Patient ID:"
                 name="patientId"
                 onChange={this.handleChange.bind(this)}
+                validate={maxLength8}
               />
-              <Button type="submit" bsStyle="success" className="pull-right">
+              <Button
+                type="submit"
+                bsStyle="success"
+                className="pull-right"
+                disabled={isSearching}
+              >
                 Search
               </Button>
               <Button
@@ -108,6 +120,7 @@ class AllPatientSearch extends React.Component {
                 bsStyle="primary"
                 className="pull-right margin-right"
                 componentClass={Link}
+                disabled={isSearching}
               >
                 Add New Patient
               </Button>
@@ -116,6 +129,7 @@ class AllPatientSearch extends React.Component {
                 bsStyle="danger"
                 className="pull-right margin-right"
                 componentClass={Link}
+                disabled={isSearching}
               >
                 Main Menu
               </Button>
@@ -139,14 +153,22 @@ function validate(values) {
 }
 
 function mapStateToProps(state) {
+  console.log("MapState", state);
   return {
     patientDetails: state.patients.patientDetails,
     noResults: state.patients.noResults,
-    noSuccess: state.patients.noSuccess
+    noSuccess: state.patients.noSuccess,
+    isSearching: state.patients.isSearching,
+    errors: state.patients.errors
   };
 }
 
 export default reduxForm({
   validate,
   form: "AllPatientSearch"
-})(connect(mapStateToProps, { getPatient })(AllPatientSearch));
+})(
+  connect(
+    mapStateToProps,
+    { getPatient, searching }
+  )(AllPatientSearch)
+);

@@ -1,5 +1,5 @@
 import {
-  SEARCH_OPENFDA,
+  SEARCH_RXIMAGE,
   CLEAR_MEDICINE_DATA,
   NO_RESULTS,
   SELECT_RESULT,
@@ -12,17 +12,16 @@ const initialState = {
   searchResults: null,
   prescriptionsDetail: null,
   prescriptionDetail: null,
-  noResults: false
+  noResults: null
 };
 
 export default function(state = initialState, action) {
   switch (action.type) {
     case SELECT_RESULT:
       return { ...state, medicineDetails: action.payload };
-    case SEARCH_OPENFDA:
-    console.log("action in reducer OPENFDA", action);
-    
-      return { ...state, searchResults: action.payload.results };
+    case SEARCH_RXIMAGE:    
+      console.log("The reducer for rximage", action.payload)
+      return { ...state, searchResults: action.payload };
     case GET_PRESCRIPTIONS:
       return { prescriptionsDetail: action.payload };
     case GET_PRESCRIPTION_DETAIL:

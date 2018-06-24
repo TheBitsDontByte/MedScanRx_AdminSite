@@ -1,6 +1,9 @@
 import React from "react";
 import { Field, reduxForm } from "redux-form";
 
+import { nomalizePhone, normalizePhone } from "../shared/Normalize";
+import { email } from "../shared/Validate";
+
 class AddEditFields extends React.Component {
   renderField(field) {
     const {
@@ -77,11 +80,13 @@ class AddEditFields extends React.Component {
             name="phone1"
             label="Primary Phone Number"
             component={this.renderField}
+            normalize={normalizePhone}
           />
           <Field
             name="phone2"
             label="Secondary Phone Number"
             component={this.renderField}
+            normalize={normalizePhone}
           />
         </div>
         <div className="col-sm-6">
@@ -109,6 +114,7 @@ class AddEditFields extends React.Component {
             name="emergencyContactPhone"
             label="Emergency Contact Phone"
             component={this.renderField}
+            normalize={normalizePhone}
           />
         </div>
       </div>

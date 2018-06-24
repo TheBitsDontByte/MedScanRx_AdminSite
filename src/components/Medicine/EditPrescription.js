@@ -10,7 +10,7 @@ import moment from "moment";
 import AddEditMedicineFields from "../shared/AddEditMedicineFields";
 import {
   getPrescriptionDetail,
-  searchOpenFDA,
+  searchRxImage,
   updatePrescription,
   deletePrescription
 } from "../../actions/medicine-actions";
@@ -24,7 +24,7 @@ class EditPrescription extends Component {
   }
 
   componentWillMount() {
-    this.props.searchOpenFDA(this.props.location.state, null);
+    this.props.searchRxImage(this.props.location.state, null);
     this.props.getPrescriptionDetail(this.props.match.params.prescriptionId);
     this.props.getPatient(this.props.match.params.patientId);
   }
@@ -229,5 +229,5 @@ const mapStateToProps = (state, ownProps) => {
 
 export default connect(
   mapStateToProps,
-  { getPrescriptionDetail, searchOpenFDA, getPatient, updatePrescription, deletePrescription }
+  { getPrescriptionDetail, searchRxImage, getPatient, updatePrescription, deletePrescription }
 )(reduxForm({ form: "EditMedicine" })(EditPrescription));

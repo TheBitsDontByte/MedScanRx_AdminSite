@@ -53,7 +53,7 @@ class AddPatientConfirmModal extends Component {
             Confirm and Save
           </Button>
         </Modal.Footer>
-      </Modal>
+      </Modal> 
     );
   }
 }

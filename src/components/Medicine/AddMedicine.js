@@ -9,7 +9,6 @@ import moment from "moment";
 
 import { getPatient } from "../../actions/patient-actions";
 import {
-  searchOpenFDA,
   savePrescription
 } from "../../actions/medicine-actions";
 import AddEditMedicineFields from "../shared/AddEditMedicineFields";
@@ -20,7 +19,6 @@ class AddMedicine extends Component {
 
   componentWillMount() {
     this.props.getPatient(this.props.match.params.patientId);
-    //this.props.searchOpenFDA({ ndc: "0641-0376-21" });
   }
 
   handleAdditionalDetailChange(event) {
@@ -199,6 +197,6 @@ export default reduxForm({
 })(
   connect(
     mapStateToProps,
-    { getPatient, searchOpenFDA, savePrescription }
+    { getPatient, savePrescription }
   )(AddMedicine)
 );
