@@ -9,7 +9,7 @@ import moment from "moment";
 
 import { getPatient } from "../../actions/patient-actions";
 import {
-  savePrescription
+  savePrescription, searchRxImage
 } from "../../actions/medicine-actions";
 import AddEditMedicineFields from "../shared/AddEditMedicineFields";
 
@@ -57,8 +57,13 @@ class AddMedicine extends Component {
     this.props.savePrescription(postData, this.props.history.push);
   }
 
+  handleRxcuiChange(event) {
+    console.log("The value of the selected rxcui", event.target.value)
+    this.props.searchRxImage(event.target.value);
+  }
+
   render() {
-    console.log("Render state in add", this.state);
+    console.log("Render props in add", this.props);
 
     if (!this.props.patientId && !this.props.ndc)
     return (
@@ -127,6 +132,18 @@ class AddMedicine extends Component {
                 </div>
               )}
             </div>
+            <div>
+              Get images click through ???
+              <select onChange={this.handleRxcuiChange.bind(this)}>
+                {_.map(this.props.rxcui, cui => {
+                  return (
+                    <option value={cui}>
+                      {cui}
+                      </option>
+                  )
+                })}
+                </select>
+              </div>
           </div>
           <div className="col-sm-7">
             <form onSubmit={this.props.handleSubmit(this.onSubmit.bind(this))}>
@@ -161,6 +178,7 @@ class AddMedicine extends Component {
 }
 
 const mapStateToProps = state => {
+  console.log("State in add", state);
   if (state.patients.patientDetails && state.medicine.medicineDetails) {
     let { patientDetails } = state.patients;
     let { openfda } = state.medicine.medicineDetails;
@@ -170,6 +188,7 @@ const mapStateToProps = state => {
       fullName: patientDetails.fullName,
       allMedicineInfo: state.medicine.medicineDetails,
       ndc: openfda.package_ndc,
+      rxcui: openfda.rxcui,
       brandName: openfda.brand_name,
       genericName: openfda.generic_name,
       route: openfda.route,
@@ -197,6 +216,6 @@ export default reduxForm({
 })(
   connect(
     mapStateToProps,
-    { getPatient, savePrescription }
+    { getPatient, savePrescription, searchRxImage }
   )(AddMedicine)
 );

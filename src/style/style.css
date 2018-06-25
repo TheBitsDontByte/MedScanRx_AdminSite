@@ -116,3 +116,15 @@ a {
     cursor: pointer;
     background-color: rgba(157, 186, 233, 0.322);
  }
+
+.rximage-border {
+    border: solid rgba(163, 189, 230, 0.5) 1px;
+    padding-top: 5px;
+    text-align: center
+}
+
+.rximage-border:hover {
+    cursor: pointer;
+    background-color: rgba(163, 189, 230, 0.3);
+}
+
