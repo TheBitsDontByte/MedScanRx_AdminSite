@@ -60,7 +60,6 @@ class PatientDetail extends Component {
       );
     }
 
-    console.log("Detail before info", this.props);
     const patientDetail = this.props.patientDetail;
     return (
       <div className="row">
@@ -114,7 +113,6 @@ class PatientDetail extends Component {
 }
 
 function mapStateToProps(state, ownProps) {
-  console.log("Mapstatetoprops in details", state);
   return {
     patientDetail: state.patients.patientDetails,
     prescriptionsDetail: state.medicine.prescriptionsDetail,

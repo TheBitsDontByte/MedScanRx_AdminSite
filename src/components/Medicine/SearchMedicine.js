@@ -8,6 +8,7 @@ import {
   searchOpenFDA,
   searchRxImage,
   selectOpenFdaResult,
+  selectRxImageResult,
   clearMedicineData,
   searching
 } from "../../actions/medicine-actions";
@@ -22,6 +23,9 @@ class SearchMedicine extends Component {
     super(props);
 
     props.clearMedicineData();
+
+    this.handleOpenfdaResultClick = this.handleOpenfdaResultClick.bind(this);
+    this.handleRximageResultClick = this.handleRximageResultClick.bind(this);
   }
 
   renderField(field) {
@@ -42,10 +46,17 @@ class SearchMedicine extends Component {
     );
   }
 
-  handleSearchResultClick(index) {
+  handleOpenfdaResultClick(index) {
     let { patientId } = this.props.match.params;
-    this.props.selectOpenFdaResult(this.props.searchResults[index]);
-    this.props.history.push(`/Patient/${patientId}/AddMedicine`);
+    this.props.selectOpenFdaResult(this.props.openfdaSearchResults[index]);
+    this.props.history.push(`/Patient/${patientId}/AddOpenFdaMedicine`);
+  }
+
+  handleRximageResultClick(index) {
+    let { patientId } = this.props.match.params;
+    this.props.selectRxImageResult(this.props.rximageSearchResults.nlmRxImages[index]);
+    console.log("clickity click", patientId)
+    this.props.history.push(`/Patient/${patientId}/AddRxImageMedicine`);
   }
 
   handleSearchSubmit(event) {
@@ -54,7 +65,6 @@ class SearchMedicine extends Component {
       ndc: event.ndc ? event.ndc.trim() : null,
       name: event.name ? event.name.trim() : null
     };
-    console.log("post data before submint", postData);
 
     this.props.searchOpenFDA(postData);
     this.props.searchRxImage(postData);
@@ -110,7 +120,11 @@ class SearchMedicine extends Component {
             </form>
           </div>
         </div>
-        <SearchResults {...this.props} />
+        <SearchResults
+          handleOpenfdaResultClick={this.handleOpenfdaResultClick}
+          handleRximageResultClick={this.handleRximageResultClick}
+          {...this.props}
+        />
       </div>
     );
   }
@@ -141,6 +155,7 @@ export default reduxForm({
       clearMedicineData,
       searchRxImage,
       selectOpenFdaResult,
+      selectRxImageResult,
       searching
     }
   )(SearchMedicine)

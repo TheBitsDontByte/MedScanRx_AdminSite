@@ -23,7 +23,8 @@ const initialState = {
 export default function(state = initialState, action) {
   switch (action.type) {
     case SELECT_RESULT:
-      return { ...state, medicineDetails: action.payload };
+      console.log("the results in select result reducer", action.payload)
+      return { medicineDetails: action.payload };
     case SEARCH_OPENFDA:
       return { ...state, openfdaSearchResults: action.payload, isSearching: null };
     case SEARCH_RXIMAGE:
@@ -35,7 +36,6 @@ export default function(state = initialState, action) {
     case NO_OPENFDA_RESULTS:
       return { ...state, openfdaErrors: action.payload, noSuccess: true, isSearching: null};
     case NO_RXIMAGE_RESULTS:
-      console.log("No results in reducer", action.payload);
       return { ...state, rximageErrors: action.payload, noSuccess: true, isSearching: null };
     case MEDICINE_SEARCHING:
       return { isSearching: true };

@@ -16,8 +16,9 @@ import AddPatient from "./components/Patient/AddPatient";
 import EditPatient from "./components/Patient/EditPatient";
 import PatientDetail from "./components/Patient/PatientDetail";
 import AllPatientSearch from "./components/Patient/AllPatientSearch";
+import AddOpenfdaMedicine from "./components/Medicine/AddOpenfdaMedicine";
+import AddRximageMedicine from "./components/Medicine/AddRximageMedicine";
 import SearchMedicine from "./components/Medicine/SearchMedicine";
-import AddMedicine from "./components/Medicine/AddMedicine";
 import RedirectPage from "./components/RedirectPage";
 import EditPrescription from "./components/Medicine/EditPrescription";
 
@@ -56,9 +57,15 @@ class App extends Component {
                 />
                 <PrivateRoute
                   exact
-                  path="/Patient/:patientId/AddMedicine"
-                  component={AddMedicine}
+                  path="/Patient/:patientId/AddRxImageMedicine"
+                  component={AddRximageMedicine}
                 />
+                <PrivateRoute
+                  exact
+                  path="/Patient/:patientId/AddOpenFdaMedicine"
+                  component={AddOpenfdaMedicine}
+                />
+                
                 <PrivateRoute
                   exact
                   path="/Patient/:patientId/Edit"

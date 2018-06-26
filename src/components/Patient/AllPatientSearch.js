@@ -17,7 +17,6 @@ class AllPatientSearch extends React.Component {
   }
 
   renderMatchingPatients() {
-    console.log("On search page, renderMATCHINGPatients: props=", this.props);
     if (this.props.isSearching)
       return <h4 className="patient-search-info-box">Searching ...</h4>;
 
@@ -39,7 +38,6 @@ class AllPatientSearch extends React.Component {
       );
 
     const patientDetails = this.props.patientDetails;
-    console.log("Patient here", patientDetails);
     return (
       <div>
         <h4 className="text-center">Patient</h4>
@@ -153,7 +151,6 @@ function validate(values) {
 }
 
 function mapStateToProps(state) {
-  console.log("MapState", state);
   return {
     patientDetails: state.patients.patientDetails,
     noResults: state.patients.noResults,

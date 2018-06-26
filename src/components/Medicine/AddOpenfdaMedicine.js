@@ -9,7 +9,8 @@ import moment from "moment";
 
 import { getPatient } from "../../actions/patient-actions";
 import {
-  savePrescription, searchRxImage
+  savePrescription,
+  searchRxImage
 } from "../../actions/medicine-actions";
 import AddEditMedicineFields from "../shared/AddEditMedicineFields";
 
@@ -57,18 +58,16 @@ class AddMedicine extends Component {
     this.props.savePrescription(postData, this.props.history.push);
   }
 
-  handleRxcuiChange(event) {
-    console.log("The value of the selected rxcui", event.target.value)
-    this.props.searchRxImage(event.target.value);
-  }
-
   render() {
     console.log("Render props in add", this.props);
 
-    if (!this.props.patientId && !this.props.ndc)
-    return (
-      <div>Loading... (fix me)</div>
-    )
+    if (!this.props.patientId)
+      return (
+        <div className="row text-center">
+          <h2>Loading ...</h2>
+        </div>
+      );
+    if (!this.props.ndc) this.props.history.push("RedirectPage");
     return (
       <div className="row">
         <h1>
@@ -132,22 +131,10 @@ class AddMedicine extends Component {
                 </div>
               )}
             </div>
-            <div>
-              Get images click through ???
-              <select onChange={this.handleRxcuiChange.bind(this)}>
-                {_.map(this.props.rxcui, cui => {
-                  return (
-                    <option value={cui}>
-                      {cui}
-                      </option>
-                  )
-                })}
-                </select>
-              </div>
           </div>
           <div className="col-sm-7">
             <form onSubmit={this.props.handleSubmit(this.onSubmit.bind(this))}>
-              <AddEditMedicineFields ndc={this.props.ndc}/>
+              <AddEditMedicineFields ndc={this.props.ndc} />
               <div className="row" style={{ paddingTop: 20 }}>
                 <Button type="submit" bsStyle="success" className="pull-right">
                   Save
@@ -177,8 +164,8 @@ class AddMedicine extends Component {
   }
 }
 
-const mapStateToProps = state => {
-  console.log("State in add", state);
+const mapStateToProps = (state, ownProps) => {
+  console.log("State in add", state, ownProps);
   if (state.patients.patientDetails && state.medicine.medicineDetails) {
     let { patientDetails } = state.patients;
     let { openfda } = state.medicine.medicineDetails;
@@ -193,6 +180,13 @@ const mapStateToProps = state => {
       genericName: openfda.generic_name,
       route: openfda.route,
       type: openfda.product_type
+    };
+  } else if (state.patients.patientDetails) {
+    let { patientDetails } = state.patients;
+
+    return {
+      patientId: patientDetails.patientId,
+      fullName: patientDetails.fullName
     };
   }
   return {};

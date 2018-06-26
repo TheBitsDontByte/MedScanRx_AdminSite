@@ -37,14 +37,12 @@ export function searchOpenFDA(postData, navigationCallback) {
 }
 
 export function searchRxImage(postData, navigationCallback) {
-  console.log(postData);
   return dispatch => {
     axios
       .post(`${BASE_URL}/Api/Prescription/SearchRxcui`, postData)
       .then(response => {
         let jsonData = JSON.parse(response.data);
         if (jsonData.nlmRxImages.length === 0) {
-          console.log("imagerx jsondata", jsonData);
 
           dispatch({
             type: NO_RXIMAGE_RESULTS,
@@ -84,6 +82,14 @@ export function savePrescription(postData, navigationCallback) {
 }
 
 export function selectOpenFdaResult(selection) {
+  return {
+    type: SELECT_RESULT,
+    payload: selection
+  };
+}
+
+export function selectRxImageResult(selection) {
+  console.log("Action select rximage", selection);
   return {
     type: SELECT_RESULT,
     payload: selection
