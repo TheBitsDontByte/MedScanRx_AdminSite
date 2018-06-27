@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import LabeledText from "../shared/LabeledText";
-import { Button, Thumbnail} from "react-bootstrap";
+import { Button, Thumbnail } from "react-bootstrap";
 import { Link } from "react-router-dom";
 import { connect } from "react-redux";
 import { Field, FieldArray, reduxForm } from "redux-form";
@@ -16,7 +16,7 @@ import AddEditMedicineFields from "../shared/AddEditMedicineFields";
 
 //REFACTOR THIS MONSTROSITY :O
 class AddMedicine extends Component {
-  state = { allMedicineInfo: null };
+  state = { allMedicineInfo: null, openFdaFilterTerm: "" };
 
   componentWillMount() {
     this.props.getPatient(this.props.match.params.patientId);
@@ -58,6 +58,23 @@ class AddMedicine extends Component {
     this.props.savePrescription(postData, this.props.history.push);
   }
 
+  handleFilterTermChange(event) {
+    this.setState({ openFdaFilterTerm: event.target.value });
+  }
+
+  onOpenFdaFilter() {
+    let x = _.filter(this.props.openFdaRxcuiSearchResults, result => {
+      return (
+        result.openfda.brand_name[0].toString().toUpperCase().includes(this.state.openFdaFilterTerm.toUpperCase()) ||
+        result.openfda.manufacturer_name[0].toString().toUpperCase().includes(
+          this.state.openFdaFilterTerm.toUpperCase()
+        )
+      );
+    });
+
+    console.log("Result", x);
+  }
+
   render() {
     console.log("Render props in addrximage", this.props);
 
@@ -75,25 +92,26 @@ class AddMedicine extends Component {
         </h1>
         <div className="row">
           <div className="col-sm-5">
+            <h3>Open FDA's Medicine Information</h3>
+            <div className="row">
+              <input
+                className="form-control"
+                placeholder="Type Manufacturer or Brand Name to filter"
+                onChange={this.handleFilterTermChange.bind(this)}
+              />
+              <button onClick={this.onOpenFdaFilter.bind(this)}>Filter</button>
+            </div>
             <h3>RxImage's Medicine Information</h3>
             <div className="row">
-              <div className="col-sm-offset-1" >
-                <LabeledText
-                    label="Name: "
-                    text={this.props.medicineName}
-                />
-                <LabeledText
-                    label="NDC: "
-                    text={this.props.ndc}
-                />
-                <LabeledText
-                    label="Rxcui: "
-                    text={this.props.rxcui}
-                />
+              <div className="col-sm-offset-1">
+                <LabeledText label="Name: " text={this.props.medicineName} />
+                <LabeledText label="NDC: " text={this.props.ndc} />
+                <LabeledText label="Rxcui: " text={this.props.rxcui} />
                 <Thumbnail src={this.props.imageUrl} responsive={true} />
               </div>
             </div>
           </div>
+
           {/* <div className="col-sm-5">
             <h3>Open FDA's Medicine Information</h3>
             <div className="row">
@@ -197,7 +215,8 @@ const mapStateToProps = (state, ownProps) => {
       ndc: medicineDetails.ndc11,
       rxcui: medicineDetails.rxcui,
       medicineName: medicineDetails.name,
-      imageUrl: medicineDetails.imageUrl
+      imageUrl: medicineDetails.imageUrl,
+      openFdaRxcuiSearchResults: state.medicine.openfdaSearchResults
     };
   } else if (state.patients.patientDetails) {
     let { patientDetails } = state.patients;

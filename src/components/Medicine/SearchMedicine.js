@@ -10,7 +10,8 @@ import {
   selectOpenFdaResult,
   selectRxImageResult,
   clearMedicineData,
-  searching
+  searching,
+  searchOpenFDARxcui
 } from "../../actions/medicine-actions";
 import SearchResults from "./SearchResults";
 
@@ -55,7 +56,7 @@ class SearchMedicine extends Component {
   handleRximageResultClick(index) {
     let { patientId } = this.props.match.params;
     this.props.selectRxImageResult(this.props.rximageSearchResults.nlmRxImages[index]);
-    console.log("clickity click", patientId)
+    this.props.searchOpenFDARxcui(this.props.rximageSearchResults.nlmRxImages[index].rxcui);
     this.props.history.push(`/Patient/${patientId}/AddRxImageMedicine`);
   }
 
@@ -156,7 +157,8 @@ export default reduxForm({
       searchRxImage,
       selectOpenFdaResult,
       selectRxImageResult,
-      searching
+      searching,
+      searchOpenFDARxcui
     }
   )(SearchMedicine)
 );

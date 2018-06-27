@@ -36,6 +36,27 @@ export function searchOpenFDA(postData, navigationCallback) {
   };
 }
 
+export function searchOpenFDARxcui(rxcui, navigationCallback) {
+  return dispatch => {
+    axios
+      .get(`${BASE_URL}/Api/Prescription/SearchOpenfda/${rxcui}`)
+      .then(response => {
+        let jsonData = JSON.parse(response.data);
+        console.log("Rxcui search jsondata", jsonData)
+        dispatch({
+          type: SEARCH_OPENFDA,
+          payload: jsonData.results
+        });
+      })
+      .catch(error => {
+        let errorMessages = error.response
+          ? error.response.data.errors
+          : NETWORK_ERROR_MESSAGE;
+        dispatch({ type: NO_OPENFDA_RESULTS, payload: errorMessages });
+      });
+  };
+}
+
 export function searchRxImage(postData, navigationCallback) {
   return dispatch => {
     axios

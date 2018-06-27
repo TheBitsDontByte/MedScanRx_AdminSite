@@ -59,13 +59,6 @@ class SearchResults extends Component {
           </h4>
         </div>
       );
-    else if (!openfdaSearchResults)
-      return (
-        <div>
-          <h2 className="text-center"> OpenFda Search Results</h2>
-          <h4 style={{ padding: 50 }}>Searching...</h4>
-        </div>
-      );
     else if (openfdaSearchResults) {
       return (
         <div>
@@ -116,11 +109,7 @@ class SearchResults extends Component {
   render() {
     if (this.props.isSearching)
       return <h4 className="patient-search-info-box">Searching ...</h4>;
-    if (
-      !this.props.openfdaSearchResults &&
-      !this.props.renderRxImageSearchResults
-    )
-      return <h4 className="patient-search-info-box">Enter an NDC Number or Medicine Name and search...</h4>
+  
     return (
       <div className="row">
         <div className="col-md-6">
