@@ -13,6 +13,14 @@
     margin-right: 5px;
 }
 
+.margin-top {
+    margin-top: 10px;
+}
+
+.right-margin {
+    margin-right: 5px;
+}
+
 
 .bold-text {
     font-weight: bolder
@@ -22,9 +30,7 @@
     color: red;
 }
 
-.right-margin {
-    margin-right: 5px;
-}
+
 
 .body {
     margin-top: 50px;

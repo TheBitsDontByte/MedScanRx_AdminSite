@@ -88,7 +88,7 @@ class SearchResults extends Component {
                     return ndc + ", ";
                   })}
                   <br />
-                  <strong>NDC:</strong>{" "}
+                  <strong>RXCUI:</strong>{" "}
                   {_.map(rxcui, cui => {
                     return cui + ", ";
                   })}

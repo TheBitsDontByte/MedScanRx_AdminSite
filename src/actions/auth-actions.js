@@ -27,7 +27,10 @@ export function login(loginData, navigationCallback) {
     //     url: "http://localhost:64850/token",
     //     data: qs.stringify({UserName: "admin1@admin.com", Password: "Admin1!", grant_type: "password"})
     // })
-    navigationCallback();
+    console.log("loggingIn", loginData);
+    sessionStorage.setItem("userInfo", JSON.stringify(loginData));
+    if (navigationCallback)
+        navigationCallback();
     return {
         type: LOGIN,
         payload: loginData
@@ -35,7 +38,10 @@ export function login(loginData, navigationCallback) {
 }
 
 export function logout(navigationCallback) {
-    navigationCallback();
+    if (navigationCallback)
+        navigationCallback();
+    sessionStorage.clear();
+
     return {
         type: LOGOUT,
     }

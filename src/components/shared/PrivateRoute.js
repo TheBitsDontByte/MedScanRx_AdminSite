@@ -4,8 +4,7 @@ import { connect } from "react-redux";
 
 const PrivateRoute = ({ component: Component, isLoggedIn, ...rest }) => (
     <Route {...rest} render={props => (
-      ///Changes for easy testing
-      true ? (
+      isLoggedIn ? (
         <Component {...props}/>
       ) : (
         <Redirect to={{

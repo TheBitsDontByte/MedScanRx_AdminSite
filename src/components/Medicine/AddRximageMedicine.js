@@ -13,12 +13,21 @@ import {
   searchRxImage
 } from "../../actions/medicine-actions";
 import AddEditMedicineFields from "../shared/AddEditMedicineFields";
+import OpenFdaMedicineInfo from "../shared/OpenFdaMedicineInfo";
 
 //REFACTOR THIS MONSTROSITY :O
 class AddMedicine extends Component {
-  state = { allMedicineInfo: null, openFdaFilterTerm: "" };
+  state = {
+    allMedicineInfo: null,
+    openFdaFilterTerm: "",
+    showFilteredOpenFdaResults: false,
+    showSelectedOpenFdaResult: false,
+    filteredResults: null
+  };
 
   componentWillMount() {
+    window.scrollTo(0, 0);
+
     this.props.getPatient(this.props.match.params.patientId);
   }
 
@@ -42,6 +51,7 @@ class AddMedicine extends Component {
   }
 
   onSubmit(values) {
+    console.log("values and state", this.state.selectedOpenFdaResult)
     let postData = {
       ...values,
       scheduledAlerts: this.calculateAlerts(
@@ -50,12 +60,12 @@ class AddMedicine extends Component {
         values.dosesPerDay
       ),
       patientId: this.props.patientId,
-      brandName: this.props.brandName[0],
-      genericName: this.props.genericName[0]
+      brandName: this.state.selectedOpenFdaResult.openfda.brand_name[0],
+      genericName: this.state.selectedOpenFdaResult.openfda.generic_name[0]
     };
 
     console.log("Values on submit", postData);
-    this.props.savePrescription(postData, this.props.history.push);
+    //this.props.savePrescription(postData, this.props.history.push);
   }
 
   handleFilterTermChange(event) {
@@ -63,16 +73,39 @@ class AddMedicine extends Component {
   }
 
   onOpenFdaFilter() {
-    let x = _.filter(this.props.openFdaRxcuiSearchResults, result => {
-      return (
-        result.openfda.brand_name[0].toString().toUpperCase().includes(this.state.openFdaFilterTerm.toUpperCase()) ||
-        result.openfda.manufacturer_name[0].toString().toUpperCase().includes(
-          this.state.openFdaFilterTerm.toUpperCase()
-        )
-      );
-    });
+    let filteredResults = _.filter(
+      this.props.openFdaRxcuiSearchResults,
+      result => {
+        return (
+          result.openfda.brand_name[0]
+            .toString()
+            .toUpperCase()
+            .includes(this.state.openFdaFilterTerm.toUpperCase()) ||
+          result.openfda.manufacturer_name[0]
+            .toString()
+            .toUpperCase()
+            .includes(this.state.openFdaFilterTerm.toUpperCase())
+        );
+      }
+    );
 
-    console.log("Result", x);
+    this.setState({
+      showSelectedOpenFdaResult: false,
+      selectedOpenFdaResult: null,
+      showFilteredOpenFdaResults: true,
+      filteredResults
+    });
+    //What to do with the filtered shit now ? How to set it on timeout ?
+    console.log("filtered results", filteredResults);
+  }
+
+  handleFilteredOpenfdaResultClick(index) {
+    console.log("filterd index", index);
+    this.setState({
+      showSelectedOpenFdaResult: true,
+      selectedOpenFdaResult: this.state.filteredResults[index],
+      showFilteredOpenFdaResults: false
+    });
   }
 
   render() {
@@ -88,18 +121,65 @@ class AddMedicine extends Component {
     return (
       <div className="row">
         <h1>
-          Add {this.props.brandName} to {this.props.fullName}
+          Add {this.props.medicineName} to {this.props.fullName}
         </h1>
         <div className="row">
-          <div className="col-sm-5">
+          <div className="form-inline col-sm-5">
             <h3>Open FDA's Medicine Information</h3>
             <div className="row">
-              <input
-                className="form-control"
-                placeholder="Type Manufacturer or Brand Name to filter"
-                onChange={this.handleFilterTermChange.bind(this)}
-              />
-              <button onClick={this.onOpenFdaFilter.bind(this)}>Filter</button>
+              <div className="text-center">
+                <input
+                  className="form-control margin-right"
+                  placeholder="Type Manufacturer or Brand Name to filter"
+                  onChange={this.handleFilterTermChange.bind(this)}
+                />
+                <button
+                  className="btn btn-primary"
+                  onClick={this.onOpenFdaFilter.bind(this)}
+                >
+                  Filter
+                </button>
+              </div>
+              {this.state.showFilteredOpenFdaResults &&
+                _.map(
+                  this.state.filteredResults,
+                  (
+                    {
+                      openfda: {
+                        package_ndc,
+                        brand_name,
+                        generic_name,
+                        manufacturer_name
+                      }
+                    },
+                    index
+                  ) => {
+                    return (
+                      <div className="col-md-offset-1 col-md-10 margin-top">
+                        <li
+                          className="list-group-item"
+                          onClick={() =>
+                            this.handleFilteredOpenfdaResultClick(index)
+                          }
+                          key={package_ndc}
+                        >
+                          <strong>NDC:</strong>{" "}
+                          {_.map(package_ndc, ndc => `${ndc}, `)}
+                          <br />
+                          <strong>Brand Name:</strong> {brand_name}
+                          <br />
+                        </li>
+                      </div>
+                    );
+                  }
+                )}
+              {this.state.showSelectedOpenFdaResult && (
+                <div className="margin-top">
+                  <OpenFdaMedicineInfo
+                    openFdaMedicineInfo={this.state.selectedOpenFdaResult}
+                  />
+                </div>
+              )}
             </div>
             <h3>RxImage's Medicine Information</h3>
             <div className="row">
@@ -112,64 +192,6 @@ class AddMedicine extends Component {
             </div>
           </div>
 
-          {/* <div className="col-sm-5">
-            <h3>Open FDA's Medicine Information</h3>
-            <div className="row">
-              <div className="col-sm-offset-1">
-                <LabeledText
-                  label="NDC:"
-                  text={_.map(this.props.ndc, ndc => {
-                    return ndc + ", ";
-                  })}
-                />
-                <LabeledText
-                  label="Generic Name: "
-                  text={this.props.genericName}
-                />
-                <LabeledText label="Brand Name: " text={this.props.brandName} />
-                <LabeledText label="Route: " text={this.props.route} />
-                <LabeledText label="Type: " text={this.props.type} />
-              </div>
-            </div>
-            <div>
-              <h3>Open FDA's Medicine Details</h3>
-              <div className="row">
-                <div className="col-sm-offset-1 col-sm-11">
-                  {this.props.allMedicineInfo ? (
-                    <select
-                      className="form-control"
-                      onChange={this.handleAdditionalDetailChange.bind(this)}
-                    >
-                      <option hidden value="">
-                        Select a category....
-                      </option>
-                      {_.map(this.props.allMedicineInfo, (value, key) => {
-                        if (key != "openfda")
-                          return (
-                            <option key={key} value={key}>
-                              {key}
-                            </option>
-                          );
-                      })}
-                    </select>
-                  ) : null}
-                </div>
-              </div>
-              {this.props.allMedicineInfo && (
-                <div className="row" style={{ marginTop: 10 }}>
-                  <div className="col-sm-offset-1 col-sm-11">
-                    <p style={{ padding: 10 }}>
-                      {
-                        this.props.allMedicineInfo[
-                          this.state.selectedAdditionalDetail
-                        ]
-                      }
-                    </p>
-                  </div>
-                </div>
-              )}
-            </div>
-          </div> */}
           <div className="col-sm-7">
             <form onSubmit={this.props.handleSubmit(this.onSubmit.bind(this))}>
               <AddEditMedicineFields ndc={this.props.ndc} />
@@ -178,7 +200,7 @@ class AddMedicine extends Component {
                   Save
                 </Button>
                 <Button
-                  className="pull-right right-margin"
+                  className="pull-right margin-right"
                   bsStyle="primary"
                   componentClass={Link}
                   to={`/Patient/${this.props.match.params.patientId}`}

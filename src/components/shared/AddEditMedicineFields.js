@@ -7,6 +7,7 @@ import Alerts from "../Medicine/Alerts";
 import AlertsEdit from "../Medicine/AlertsEdit";
 
 class AddEditMedicineFields extends Component {
+
   renderField = field => {
     const { touched, error } = field.meta;
     const className = `form-group ${touched && error ? "has-error" : ""}`;
@@ -56,9 +57,14 @@ class AddEditMedicineFields extends Component {
               <option hidden value="">
                 Select the correct NDC...
               </option>
-              {_.map(this.props.ndc, ndc => {
-                return <option value={ndc}>{ndc}</option>;
-              })}
+
+              {typeof this.props.ndc == "string" ? (
+                <option value={this.props.ndc}>{this.props.ndc}</option>
+              ) : (
+                _.map(this.props.ndc, ndc => {
+                  return <option value={ndc}>{ndc}</option>;
+                })
+              )}
             </Field>
           </div>
           <div className="row" />
@@ -132,7 +138,9 @@ class AddEditMedicineFields extends Component {
             style={{ marginBottom: 10, marginLeft: 35 }}
             onClick={() => this.props.onToggleAlert()}
           >
-            {this.props.showCurrentAlerts ? "Show Schedule Picker" : "Show Current Alerts"}
+            {this.props.showCurrentAlerts
+              ? "Show Schedule Picker"
+              : "Show Current Alerts"}
           </Button>
         ) : null}
         <div className="col-sm-offset-1 col-sm-11">
