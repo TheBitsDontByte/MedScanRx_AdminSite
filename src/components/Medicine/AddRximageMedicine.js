@@ -51,7 +51,6 @@ class AddMedicine extends Component {
   }
 
   onSubmit(values) {
-    console.log("values and state", this.state.selectedOpenFdaResult)
     let postData = {
       ...values,
       scheduledAlerts: this.calculateAlerts(
@@ -61,11 +60,14 @@ class AddMedicine extends Component {
       ),
       patientId: this.props.patientId,
       brandName: this.state.selectedOpenFdaResult.openfda.brand_name[0],
-      genericName: this.state.selectedOpenFdaResult.openfda.generic_name[0]
+      genericName: this.state.selectedOpenFdaResult.openfda.generic_name[0],
+      rxcui: this.props.rxcui,
+      imageUrl: this.props.imageUrl,
+      rximageMedicineName: this.props.medicineName
     };
 
     console.log("Values on submit", postData);
-    //this.props.savePrescription(postData, this.props.history.push);
+    this.props.savePrescription(postData, this.props.history.push);
   }
 
   handleFilterTermChange(event) {
@@ -95,12 +97,9 @@ class AddMedicine extends Component {
       showFilteredOpenFdaResults: true,
       filteredResults
     });
-    //What to do with the filtered shit now ? How to set it on timeout ?
-    console.log("filtered results", filteredResults);
   }
 
   handleFilteredOpenfdaResultClick(index) {
-    console.log("filterd index", index);
     this.setState({
       showSelectedOpenFdaResult: true,
       selectedOpenFdaResult: this.state.filteredResults[index],
@@ -109,8 +108,6 @@ class AddMedicine extends Component {
   }
 
   render() {
-    console.log("Render props in addrximage", this.props);
-
     if (!this.props.patientId)
       return (
         <div className="row text-center">

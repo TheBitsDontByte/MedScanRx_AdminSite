@@ -113,12 +113,6 @@ class AddEditMedicineFields extends Component {
           <div className="col-sm-12">
             <Field
               type="text"
-              name="barcode"
-              label="Barcode on Bottle:"
-              component={this.renderField}
-            />
-            <Field
-              type="text"
               name="warnings"
               label="Warnings:"
               component={this.renderField}
