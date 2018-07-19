@@ -10,12 +10,10 @@ class OpenFdaMedicineInfo extends React.Component {
   }
 
   handleAdditionalDetailChange(event) {
-    console.log("selecting the additional details", event.target.value);
     this.setState({ selectedAdditionalDetail: event.target.value });
   }
 
   render() {
-    console.log("In the new component, ", this.props);
     let {
       brand_name,
       route,
@@ -46,6 +44,7 @@ class OpenFdaMedicineInfo extends React.Component {
             <div className="col-sm-offset-1 col-sm-11">
               {openFdaMedicineInfo ? (
                 <select
+                  style={{maxWidth: "-webkit-fill-available"}}
                   className="form-control"
                   onChange={this.handleAdditionalDetailChange.bind(this)}
                 >

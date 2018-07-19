@@ -2,13 +2,17 @@ import React, { Component } from "react";
 import { Field, FieldArray, reduxForm, formValueSelector } from "redux-form";
 import { Button, ButtonGroup, Alert } from "react-bootstrap";
 import { connect } from "react-redux";
-import moment from 'moment';
+import moment from "moment";
 
 let times = [];
-for (let i = 0; i < 24; i++ ){
-  times.push(moment().hour(i).minute(0).seconds(0))
+for (let i = 0; i < 24; i++) {
+  times.push(
+    moment()
+      .hour(i)
+      .minute(0)
+      .seconds(0)
+  );
 }
-console.log(times);
 
 const REGULAR = "R",
   TAPER = "T",
@@ -22,8 +26,7 @@ class Alerts extends Component {
       showRegular: false,
       showTaper: false,
       showInterval: false,
-      showOptional: false,
-      
+      showOptional: false
     };
 
     this.renderSelectList = this.renderSelectList.bind(this);
@@ -31,13 +34,14 @@ class Alerts extends Component {
   }
 
   renderSelectList(fields) {
-    return fields.map((time, index) => (
-      <div className="row" style={{paddingTop: 5}}>
+    return fields.map((field, index) => {
+      return (
+      <div style={{ paddingTop: 5 }}>
         <div className="form-inline">
-          <label style={{marginRight: 10}}>{`Alert #${index + 1}`}</label>
+          <label style={{ marginRight: 10 }}>{`Alert #${index + 1}`}</label>
           <Field
-          style={{width: "75%"}}
-            name={time}
+            style={{ width: "75%" }}
+            name={field}
             component="select"
             label={`Time #${index + 1}`}
             className="form-control"
@@ -57,7 +61,7 @@ class Alerts extends Component {
           {/* <span>{error}</span> */}
         </div>
       </div>
-    ));
+    )});
   }
 
   renderRegularAlertsFiled({
@@ -70,9 +74,26 @@ class Alerts extends Component {
     for (let i = fields.length; i < numberOfFields; i++) fields.push({});
     for (let i = fields.length; i > numberOfFields; i--) fields.pop({});
     return (
-      <div className="col-sm-offset-1 ">
+      <div>
         {this.renderSelectList(fields)}
         <div style={{ paddingTop: 10 }} />
+        {error && submitFailed && <div className="text-danger"> {error}</div>}
+      </div>
+    );
+  }
+
+  renderRadioButton(field) {
+    const { input, meta, radioButtons, name } = field;
+    const hasError = meta.touched && meta.error;
+    return (
+      <div>
+        {radioButtons.map(rb => (
+          <label key={rb.value} className={rb.labelClass}>
+            <input {...input} type="radio" value={rb.value} />
+            {rb.label}
+          </label>
+        ))}
+        {hasError && <div><span className="text-danger">{meta.error}</span></div>}
       </div>
     );
   }
@@ -97,17 +118,23 @@ class Alerts extends Component {
               style={{ marginLeft: 10, width: 75 }}
               onChange={this.onDosesPerDayChange.bind(this)}
             />
-            {/* <input
-              id="dosesPerDay"
-              value={dosesPerDay}
-              type="number"
-              onChange={this.onDosesPerDayChange.bind(this)}
-              style={{ marginLeft: 10, width: 75 }}
-              className="form-control"
-            /> */}
           </label>
         </div>
-        <div>
+        <div className="col-sm-10">
+          <Field
+            component={this.renderRadioButton}
+            name="startDay"
+            radioButtons={[
+              { value: "today", label: "Start Today " },
+              {
+                value: "tomorrow",
+                label: "Start Tomorrow ",
+                labelClass: "pull-right"
+              }
+            ]}
+          />
+        </div>
+        <div className="col-sm-12">
           <FieldArray
             label="Scheduled Times"
             name="scheduledAlerts"
@@ -120,13 +147,9 @@ class Alerts extends Component {
   }
 }
 
-// Alerts = reduxForm({
-//   form: "AddMedicine"
-// })(Alerts)
-
 const selector = formValueSelector("AddMedicine");
 
 export default connect(state => {
   const numberOfDoses = selector(state, "dosesPerDay") || 3;
-  return { numberOfDoses, initialValues: {dosesPerDay: numberOfDoses} };
-})(reduxForm({form: "AddMedicine"})(Alerts));
+  return { numberOfDoses, initialValues: { dosesPerDay: numberOfDoses } };
+})(reduxForm({ form: "AddMedicine" })(Alerts));

@@ -110,7 +110,6 @@ export function selectOpenFdaResult(selection) {
 }
 
 export function selectRxImageResult(selection) {
-  console.log("Action select rximage", selection);
   return {
     type: SELECT_RESULT,
     payload: selection
