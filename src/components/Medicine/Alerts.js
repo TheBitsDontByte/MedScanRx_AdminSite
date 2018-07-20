@@ -1,8 +1,9 @@
 import React, { Component } from "react";
 import { Field, FieldArray, reduxForm, formValueSelector } from "redux-form";
-import { Button, ButtonGroup, Alert } from "react-bootstrap";
 import { connect } from "react-redux";
 import moment from "moment";
+
+import { normalizeDosesPerDay } from '../shared/Normalize'
 
 let times = [];
 for (let i = 0; i < 24; i++) {
@@ -57,8 +58,6 @@ class Alerts extends Component {
               );
             })}
           </Field>
-
-          {/* <span>{error}</span> */}
         </div>
       </div>
     )});
@@ -117,6 +116,7 @@ class Alerts extends Component {
               name="dosesPerDay"
               style={{ marginLeft: 10, width: 75 }}
               onChange={this.onDosesPerDayChange.bind(this)}
+              normalize={normalizeDosesPerDay}
             />
           </label>
         </div>

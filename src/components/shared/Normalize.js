@@ -13,3 +13,12 @@ export const normalizePhone = value => {
     return `${onlyNums.slice(0, 3)}-${onlyNums.slice(3, 6)}-${onlyNums.slice(6, 10)}`
   }
   
+export const normalizeDosesPerDay = value => {
+  if (value > 9)
+    return 9;
+
+  if (value < 1)
+    return 1;
+  
+  return value;
+}

@@ -26,7 +26,6 @@ class AddEditMedicineFields extends Component {
   };
 
   renderSelectField = field => {
-    console.log("field", field);
     const { touched, error } = field.meta;
     const className = `form-group ${touched && error ? "has-error" : ""}`;
 
@@ -181,19 +180,7 @@ class AddEditMedicineFields extends Component {
         ) : null}
         <div className="col-sm-offset-1 col-sm-11">
           {/* Have a button ? checkbox ? something to indicate switching between showing alerts and .adding this guy */}
-          {this.props.allowEdits ? (
-            this.props.showCurrentAlerts ? (
-              <div className="form-inline">{this.displayScheduledAlerts()}</div>
-            ) : this.props.allowEdits ? (
-              <AlertsEdit />
-            ) : (
-              <Alerts />
-            )
-          ) : this.props.allowEdits ? (
-            <AlertsEdit />
-          ) : (
-            <Alerts />
-          )}
+          <Alerts />
         </div>
       </div>
     );

@@ -5,7 +5,6 @@ import { Link } from "react-router-dom";
 import { connect } from "react-redux";
 import { reduxForm } from "redux-form";
 import _ from "lodash";
-import moment from "moment";
 
 import { getPatient } from "../../actions/patient-actions";
 import {
@@ -14,6 +13,8 @@ import {
 } from "../../actions/medicine-actions";
 import AddEditMedicineFields from "../shared/AddEditMedicineFields";
 import OpenFdaMedicineInfo from "../shared/OpenFdaMedicineInfo";
+
+import { calculateAlerts } from "./AddMedicineHelperFunctions"
 
 //REFACTOR THIS MONSTROSITY :O
 class AddMedicine extends Component {
@@ -36,65 +37,6 @@ class AddMedicine extends Component {
     this.setState({ selectedAdditionalDetail: event.target.value });
   }
 
-  calculateAlertsStartingToday({
-    scheduledAlerts,
-    originalNumberOfDoses,
-    dosesPerDay
-  }) {
-    console.log("Start today", scheduledAlerts, originalNumberOfDoses, dosesPerDay)
-    let allAlerts = [];
-    let startingIndex = 0;
-    for (let i = 0; i < scheduledAlerts.length; i++) {
-      if (moment(scheduledAlerts[i]).isAfter(moment())) {
-        startingIndex = i;
-        break;
-      }
-    }
-
-    let daysToAdd = 0;
-
-    for (
-      let k = startingIndex;
-      k < +originalNumberOfDoses + +startingIndex;
-      k++
-    ) {
-      if (k !== 0 && k % dosesPerDay == 0) daysToAdd++;
-      let nextAlert = moment(scheduledAlerts[k % dosesPerDay])
-        .add(daysToAdd, "day")
-        .format("YYYYMMDD HH:mm:ss");
-
-      allAlerts.push(nextAlert);
-    }
-
-    return allAlerts;
-  }
-
-  calculateAlertsStartingTomorrow({
-    scheduledAlerts,
-    originalNumberOfDoses,
-    dosesPerDay
-  }) {
-    let allAlerts = [];
-    let daysToAdd = 1;
-
-    for (let i = 0; i < originalNumberOfDoses; i++) {
-      if (i !== 0 && i % dosesPerDay == 0) daysToAdd++;
-      let nextAlert = moment(scheduledAlerts[i % dosesPerDay])
-        .add(daysToAdd, "day")
-        .format("YYYYMMDD HH:mm:ss");
-
-      allAlerts.push(nextAlert);
-    }
-
-    return allAlerts;
-  }
-
-  calculateAlerts(values) {
-    return values.startDay === "today"
-      ? this.calculateAlertsStartingToday(values)
-      : this.calculateAlertsStartingTomorrow(values);
-  }
-
   onSubmit(values) {
     if (!this.state.selectedOpenFdaResult) {
       this.setState({ selectedOpenFdaResultError: true });
@@ -105,7 +47,7 @@ class AddMedicine extends Component {
 
     let postData = {
       ...values,
-      scheduledAlerts: this.calculateAlerts(values),
+      scheduledAlerts: calculateAlerts(values),
       patientId: this.props.patientId,
       brandName: this.state.selectedOpenFdaResult.openfda.brand_name[0],
       genericName: this.state.selectedOpenFdaResult.openfda.generic_name[0],
@@ -115,7 +57,7 @@ class AddMedicine extends Component {
     };
 
     console.log("Values on submit", postData);
-    //this.props.savePrescription(postData, this.props.history.push);
+    this.props.savePrescription(postData, this.props.history.push);
   }
 
   handleFilterTermChange(event) {
@@ -159,7 +101,7 @@ class AddMedicine extends Component {
         </div>
       );
 
-    if (!this.props.ndc) this.props.history.push("RedirectPage");
+    if (!this.props.ndc) this.props.history.push("/RedirectPage");
 
     return (
       <div className="row">
@@ -339,11 +281,7 @@ function validate(values) {
     errors.scheduledAlerts = {
       _error: "Duplicate alert times are not allowed"
     };
-  // let scheduledTimesArrayErrors = [];
-  // scheduledTimesArrayErrors[0] = "errorTest";
-  // scheduledTimesArrayErrors[1] = "error two";
-  // errors.scheduledTimes = [];
-  // errors.scheduledTimes[0] = "Invalidations";
+
   return errors;
 }
 

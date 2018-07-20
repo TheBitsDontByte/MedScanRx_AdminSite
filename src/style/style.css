@@ -134,3 +134,11 @@ a {
     background-color: rgba(163, 189, 230, 0.3);
 }
 
+.login-box {
+    width: 50%;
+    margin-right: auto;
+    margin-left: auto;
+    float: none;
+    margin-top: 150px;
+    padding-bottom: 10px;
+}

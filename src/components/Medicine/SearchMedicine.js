@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import { Field, reduxForm } from "redux-form";
 import { connect } from "react-redux";
-import { Button, Thumbnail } from "react-bootstrap";
+import { Button } from "react-bootstrap";
 import { Link } from "react-router-dom";
 
 import {
@@ -14,10 +14,6 @@ import {
   searchOpenFDARxcui
 } from "../../actions/medicine-actions";
 import SearchResults from "./SearchResults";
-
-//TEMP
-import axios from "axios";
-import _ from "lodash";
 
 class SearchMedicine extends Component {
   constructor(props) {
@@ -55,8 +51,12 @@ class SearchMedicine extends Component {
 
   handleRximageResultClick(index) {
     let { patientId } = this.props.match.params;
-    this.props.selectRxImageResult(this.props.rximageSearchResults.nlmRxImages[index]);
-    this.props.searchOpenFDARxcui(this.props.rximageSearchResults.nlmRxImages[index].rxcui);
+    this.props.selectRxImageResult(
+      this.props.rximageSearchResults.nlmRxImages[index]
+    );
+    this.props.searchOpenFDARxcui(
+      this.props.rximageSearchResults.nlmRxImages[index].rxcui
+    );
     this.props.history.push(`/Patient/${patientId}/AddRxImageMedicine`);
   }
 
@@ -78,21 +78,25 @@ class SearchMedicine extends Component {
       <div>
         <div className="row">
           <h1>Search Medicine</h1>
-          <div className="col-sm-4">
+          <div className="col-sm-12">
             <form
               className="form-group"
               onSubmit={handleSubmit(this.handleSearchSubmit.bind(this))}
             >
-              <Field
-                component={this.renderField}
-                label="NDC Number:"
-                name="ndc"
-              />
-              <Field
-                component={this.renderField}
-                label="Medicine Name:"
-                name="name"
-              />
+              <div className="col-sm-6">
+                <Field
+                  component={this.renderField}
+                  label="NDC Number:"
+                  name="ndc"
+                />
+              </div>
+              <div className="col-sm-6">
+                <Field
+                  component={this.renderField}
+                  label="Medicine Name:"
+                  name="name"
+                />
+              </div>
 
               <Button
                 type="submit"

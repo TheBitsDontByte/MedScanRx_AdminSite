@@ -19,15 +19,12 @@ import AllPatientSearch from "./Patient/AllPatientSearch";
 import AddOpenfdaMedicine from "./Medicine/AddOpenfdaMedicine";
 import AddRximageMedicine from "./Medicine/AddRximageMedicine";
 import SearchMedicine from "./Medicine/SearchMedicine";
-import RedirectPage from "./RedirectPage";
+import Redirect from "./RedirectPage";
 import EditPrescription from "./Medicine/EditPrescription";
 
 import { login } from "../actions/auth-actions";
 
-//misc
 import reducers from "../reducers";
-import logo from "../logo.svg";
-import Redirect from "react-router-dom/Redirect";
 
 const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
 const store = createStore(reducers, composeEnhancers(applyMiddleware(thunk)));
@@ -89,8 +86,7 @@ class MedScanRx extends Component {
             <PrivateRoute path="/MainMenu" component={MainMenu} />
             <Route exact path="/" component={LoginPage} />
 
-            <Route component={RedirectPage} />
-            {/* Think of  abeter way to deal with this */}
+            <Route component={Redirect} />
           </Switch>
         </div>
         <Footer />

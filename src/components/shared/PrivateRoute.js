@@ -15,7 +15,7 @@ const PrivateRoute = ({ component: Component, isLoggedIn, ...rest }) => (
     )}/>
   )
 
-function mapStateToProps (state, ownProps) {
+const mapStateToProps = (state, ownProps) => {
     return { isLoggedIn: state.authentication.isLoggedIn};
 }
 
