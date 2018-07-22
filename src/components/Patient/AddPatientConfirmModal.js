@@ -10,7 +10,6 @@ class AddPatientConfirmModal extends Component {
   }
 
   render() {
-    console.log("Modal props", this.props)
     let patientDetails = this.props.patientDetails;
 
     return (

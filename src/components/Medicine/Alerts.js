@@ -37,7 +37,7 @@ class Alerts extends Component {
   renderSelectList(fields) {
     return fields.map((field, index) => {
       return (
-      <div style={{ paddingTop: 5 }}>
+      <div key ={index} style={{ paddingTop: 5 }}>
         <div className="form-inline">
           <label style={{ marginRight: 10 }}>{`Alert #${index + 1}`}</label>
           <Field
@@ -114,8 +114,8 @@ class Alerts extends Component {
               type="number"
               className="form-control"
               name="dosesPerDay"
-              style={{ marginLeft: 10, width: 75 }}
               onChange={this.onDosesPerDayChange.bind(this)}
+              style={{ marginLeft: 10, width: 75 }}
               normalize={normalizeDosesPerDay}
             />
           </label>
@@ -148,6 +148,7 @@ class Alerts extends Component {
 }
 
 const selector = formValueSelector("AddMedicine");
+
 
 export default connect(state => {
   const numberOfDoses = selector(state, "dosesPerDay") || 3;

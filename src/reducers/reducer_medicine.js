@@ -23,7 +23,6 @@ const initialState = {
 export default function(state = initialState, action) {
   switch (action.type) {
     case SELECT_RESULT:
-      console.log("the results in select result reducer", action.payload)
       return { medicineDetails: action.payload };
     case SEARCH_OPENFDA:
       return { ...state, openfdaSearchResults: action.payload, isSearching: null };

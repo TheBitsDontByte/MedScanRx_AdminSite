@@ -28,16 +28,14 @@ class AddMedicine extends Component {
   }
 
   onSubmit(values) {
+    console.log("Sumbitting, props", this.props)
     let postData = {
       ...values,
       scheduledAlerts: calculateAlerts(values),
       patientId: this.props.patientId,
-      brandName: this.props.brandName[0],
-      genericName: this.props.genericName[0],
       rxcui: this.props.rxcui[0]
     };
 
-    console.log("Values on submit", postData);
     this.props.savePrescription(postData, this.props.history.push);
   }
 
@@ -49,17 +47,15 @@ class AddMedicine extends Component {
         </div>
       );
 
-    //This is an anti-pattern, think about how to refactor TODO
     if (!this.props.ndc) {
       this.props.history.push("/RedirectPage");
       return <div />;
     }
-    console.log("Props in openfda", this.props);
 
     return (
       <div className="row">
         <h1>
-          Add {this.props.brandName} to {this.props.fullName}
+          Add {this.props.medicineDetails.openfda.brand_name} to {this.props.fullName}
         </h1>
         <div className="row">
           <div className="col-sm-5">
@@ -112,18 +108,18 @@ const mapStateToProps = (state, ownProps) => {
       allMedicineInfo: state.medicine.medicineDetails,
       ndc: openfda.package_ndc,
       rxcui: openfda.rxcui,
-      brandName: openfda.brand_name,
-      genericName: openfda.generic_name,
       route: openfda.route,
-      type: openfda.product_type
+      type: openfda.product_type,
     };
   } else if (state.patients.patientDetails) {
     return {
       patientId: state.patients.patientDetails.patientId,
-      fullName: state.patients.patientDetails.fullName
+      fullName: state.patients.patientDetails.fullName,
+
     };
   }
-  return {};
+  return {
+  };
 };
 
 function validate(values) {
@@ -175,7 +171,7 @@ function validate(values) {
 
 export default reduxForm({
   form: "AddMedicine",
-  validate
+  validate,
 })(
   connect(
     mapStateToProps,

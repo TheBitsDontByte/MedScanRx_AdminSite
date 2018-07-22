@@ -1,10 +1,7 @@
-import axios from "axios";
-import qs from 'qs';
 
 export const LOGIN = "login";
 export const LOGOUT = "logout";
 
-const BASE_URL = "http://localhost:64850";
 
 //Authentication & Login & Logout
 export function login(loginData, navigationCallback) {

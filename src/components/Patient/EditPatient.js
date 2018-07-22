@@ -46,7 +46,6 @@ class EditPatient extends Component {
       showModal: true
     });
 
-    console.log("PatientDetails", this.state.patientDetails);
   }
 
   updatePatient() {

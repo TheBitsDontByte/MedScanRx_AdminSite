@@ -20,7 +20,7 @@ import AddOpenfdaMedicine from "./Medicine/AddOpenfdaMedicine";
 import AddRximageMedicine from "./Medicine/AddRximageMedicine";
 import SearchMedicine from "./Medicine/SearchMedicine";
 import Redirect from "./RedirectPage";
-import EditPrescription from "./Medicine/EditPrescription";
+import EditMedicine from "./Medicine/EditMedicine";
 
 import { login } from "../actions/auth-actions";
 
@@ -33,9 +33,7 @@ class MedScanRx extends Component {
   componentWillMount() {
     let loggedIn = JSON.parse(sessionStorage.getItem("userInfo"));
     if (!loggedIn) {
-      console.log("not logged in");
     } else {
-      console.log("Loggedin", loggedIn);
       this.props.login(loggedIn, null)
     }
   }
@@ -55,7 +53,7 @@ class MedScanRx extends Component {
             <PrivateRoute
               exact
               path="/Patient/:patientId/EditPrescription/:prescriptionId"
-              component={EditPrescription}
+              component={EditMedicine}
             />
             <PrivateRoute
               exact

@@ -3,7 +3,6 @@ import { Link } from "react-router-dom";
 import { connect } from "react-redux";
 import { Button } from "react-bootstrap";
 
-import LabeledText from "../shared/LabeledText";
 import Medicines from "./Medicines";
 import PatientInfo from "./PatientInfo";
 import ErrorBanner from "../shared/ErrorBanner";
@@ -23,12 +22,14 @@ class PatientDetail extends Component {
     this.props.getPrescriptions(this.props.match.params.patientId);
   }
 
-  onPrescriptionClick(prescriptionId, ndc) {
+  onPrescriptionClick(index) {
+    let prescriptionDetail = this.props.prescriptionsDetail[index]
+
     this.props.history.push({
       pathname: `/Patient/${
         this.props.patientDetail.patientId
-      }/EditPrescription/${prescriptionId}`,
-      state: { ndc: ndc }
+      }/EditPrescription/${prescriptionDetail.prescriptionId}`,
+      state: { prescriptionDetail }
     });
   }
 

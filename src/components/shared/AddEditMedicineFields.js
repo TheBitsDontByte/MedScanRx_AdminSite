@@ -19,6 +19,7 @@ class AddEditMedicineFields extends Component {
           type={field.type}
           {...field.input}
           autoComplete="off"
+          disabled={field.disabled}
         />
         <div className="text-danger">{touched ? error : ""}</div>
       </div>
@@ -68,19 +69,37 @@ class AddEditMedicineFields extends Component {
         <div className="col-sm-offset-1 col-sm-11">
           <div className="row">
             <div className="col-sm-6 ">
-              <Field name="ndc" component={this.renderSelectField} label="NDC:">
-                <option hidden value={null}>
-                  Select the correct NDC...
-                </option>
+              {this.props.editing ? (
+                <Field
+                  type="text"
+                  name="ndc"
+                  label="NDC:"
+                  component={this.renderField}
+                  disabled
+                />
+              ) : (
+                <Field
+                  name="ndc"
+                  component={this.renderSelectField}
+                  label="NDC:"
+                >
+                  <option hidden value={null}>
+                    Select the correct NDC...
+                  </option>
 
-                {typeof this.props.ndc === "string" ? (
-                  <option value={this.props.ndc}>{this.props.ndc}</option>
-                ) : (
-                  _.map(this.props.ndc, ndc => {
-                    return <option value={ndc}>{ndc}</option>;
-                  })
-                )}
-              </Field>
+                  {typeof this.props.ndc === "string" ? (
+                    <option value={this.props.ndc}>{this.props.ndc}</option>
+                  ) : (
+                    _.map(this.props.ndc, ndc => {
+                      return (
+                        <option key={ndc} value={ndc}>
+                          {ndc}
+                        </option>
+                      );
+                    })
+                  )}
+                </Field>
+              )}
             </div>
             <div className="col-sm-6">
               <Field
@@ -91,24 +110,46 @@ class AddEditMedicineFields extends Component {
               />
             </div>
           </div>
-          <div className="row">
-            <div className="col-sm-6">
-              <Field
-                type="text"
-                name="originalNumberOfDoses"
-                label="Number of Doses: "
-                component={this.renderField}
-              />
+          {this.props.editing ? (
+            <div className="row">
+              <div className="col-sm-6">
+                <Field
+                  type="text"
+                  name="currentNumberOfDoses"
+                  label="Remaining Doses: "
+                  component={this.renderField}
+                  disabled={!this.props.editingAlerts}
+                />
+              </div>
+              <div className="col-sm-6">
+                <Field
+                  type="text"
+                  name="currentNumberOfRefills"
+                  label="Remaining Refills: "
+                  component={this.renderField}
+                />
+              </div>
             </div>
-            <div className="col-sm-6">
-              <Field
-                type="text"
-                name="originalNumberOfRefills"
-                label="Number of Refills: "
-                component={this.renderField}
-              />
+          ) : (
+            <div className="row">
+              <div className="col-sm-6">
+                <Field
+                  type="text"
+                  name="originalNumberOfDoses"
+                  label="Number of Doses: "
+                  component={this.renderField}
+                />
+              </div>
+              <div className="col-sm-6">
+                <Field
+                  type="text"
+                  name="originalNumberOfRefills"
+                  label="Number of Refills: "
+                  component={this.renderField}
+                />
+              </div>
             </div>
-          </div>
+          )}
           <div className="row">
             <div className="col-sm-6">
               <Field
@@ -166,21 +207,25 @@ class AddEditMedicineFields extends Component {
             </div>
           </div>
         </div>
-        <h3 style={{ display: "inline-block" }}>Scheduled Alerts</h3>
-        {this.props.allowEdits ? (
-          <Button
-            bsStyle="primary"
-            style={{ marginBottom: 10, marginLeft: 35 }}
-            onClick={() => this.props.onToggleAlert()}
-          >
-            {this.props.showCurrentAlerts
-              ? "Show Schedule Picker"
-              : "Show Current Alerts"}
-          </Button>
-        ) : null}
-        <div className="col-sm-offset-1 col-sm-11">
-          {/* Have a button ? checkbox ? something to indicate switching between showing alerts and .adding this guy */}
-          <Alerts />
+        <div>
+          <h3>Scheduled Alerts</h3>
+
+          {this.props.editing && this.props.editingAlerts ? (
+            <div className="col-sm-offset-1 col-sm-11">
+              {/* TODO FIX THIS MAKE IT JUST ALERTS */}
+              {this.props.editing ? <AlertsEdit dosesPerDay={3} /> : <Alerts />}
+            </div>
+          ) : this.props.editing ? (
+            <div className="col-sm-offset-1 col-sm-11">
+              <Button bsStyle="primary" onClick={this.props.onEditAlertsClick}>
+                Edit Alerts/Remaining Doses
+              </Button>
+            </div>
+          ) : (
+            <div className="col-sm-offset-1 col-sm-11">
+              <Alerts />
+            </div>
+          )}
         </div>
       </div>
     );

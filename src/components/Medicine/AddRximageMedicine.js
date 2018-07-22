@@ -40,7 +40,6 @@ class AddMedicine extends Component {
   onSubmit(values) {
     if (!this.state.selectedOpenFdaResult) {
       this.setState({ selectedOpenFdaResultError: true });
-      window.scrollTo(0, 0);
       return;
     }
     this.setState({ selectedOpenFdaResultError: null });
@@ -49,14 +48,10 @@ class AddMedicine extends Component {
       ...values,
       scheduledAlerts: calculateAlerts(values),
       patientId: this.props.patientId,
-      brandName: this.state.selectedOpenFdaResult.openfda.brand_name[0],
-      genericName: this.state.selectedOpenFdaResult.openfda.generic_name[0],
       rxcui: this.props.rxcui,
       imageUrl: this.props.imageUrl,
-      rximageMedicineName: this.props.medicineName
     };
 
-    console.log("Values on submit", postData);
     this.props.savePrescription(postData, this.props.history.push);
   }
 
@@ -116,7 +111,7 @@ class AddMedicine extends Component {
                 <LabeledText label="Name: " text={this.props.medicineName} />
                 <LabeledText label="NDC: " text={this.props.ndc} />
                 <LabeledText label="Rxcui: " text={this.props.rxcui} />
-                <Thumbnail src={this.props.imageUrl} responsive={true} />
+                <Thumbnail src={this.props.imageUrl} responsive="true" />
               </div>
             </div>
             <h3>Open FDA's Medicine Information</h3>
@@ -152,7 +147,7 @@ class AddMedicine extends Component {
                     index
                   ) => {
                     return (
-                      <div className="col-md-offset-1 col-md-10 margin-top">
+                      <div key={package_ndc} className="col-md-offset-1 col-md-10 margin-top">
                         <li
                           className="list-group-item"
                           onClick={() =>

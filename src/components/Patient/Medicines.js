@@ -6,26 +6,25 @@ const Medicines = props => {
     <table className="table table-striped table-bordered">
       <thead>
         <tr>
-          <th>MedineName</th>
+          <th>Prescirption Name</th>
           <th>Dosage</th>
-          <th>Frequency</th>
+          <th>Next Alert</th>
           <th>NDC</th>
         </tr>
       </thead>
       <tbody>
-        {_.map(props.prescriptionsDetail, detail => {
+        {_.map(props.prescriptionsDetail, (detail, index) => {
           return (
-       
             <tr
               onClick={() =>
-                props.onPrescriptionClick(detail.prescriptionId, detail.ndc)
+                props.onPrescriptionClick(index)
               }
             >
-              <td>{detail.brandName}</td>
+              <td>{detail.prescriptionName}</td>
               <td>{detail.dosage}</td>
               <td>{detail.nextAlert}</td>
               <td>{detail.ndc}</td>
-             
+            
             </tr>
           );
         })}

@@ -6,7 +6,7 @@ export const SEARCH_RXIMAGE = "search_rximage";
 export const CLEAR_MEDICINE_DATA = "clear_medicine_data";
 export const NO_RXIMAGE_RESULTS = "no__rximage_results";
 export const NO_OPENFDA_RESULTS = "no_openfda_results";
-export const MEDICINE_SEARCHING = "medicine_searching"
+export const MEDICINE_SEARCHING = "medicine_searching";
 export const SELECT_RESULT = "select_result";
 export const SAVE_PRESCRIPTION = "save_prescription";
 export const GET_PRESCRIPTIONS = "get_prescriptions";
@@ -42,7 +42,6 @@ export function searchOpenFDARxcui(rxcui, navigationCallback) {
       .get(`${BASE_URL}/Api/Prescription/SearchOpenfda/${rxcui}`)
       .then(response => {
         let jsonData = JSON.parse(response.data);
-        console.log("Rxcui search jsondata", jsonData)
         dispatch({
           type: SEARCH_OPENFDA,
           payload: jsonData.results
@@ -64,7 +63,6 @@ export function searchRxImage(postData, navigationCallback) {
       .then(response => {
         let jsonData = JSON.parse(response.data);
         if (jsonData.nlmRxImages.length === 0) {
-
           dispatch({
             type: NO_RXIMAGE_RESULTS,
             payload: "No medicines found with those search terms"
@@ -138,7 +136,10 @@ export const getPrescriptionDetail = prescriptionId => {
     axios
       .get(`${BASE_URL}/Api/Prescription/Prescription/${prescriptionId}`)
       .then(response => {
-        console.log("The response from getPrescriptionDetail", response);
+        dispatch({
+          type: GET_PRESCRIPTION_DETAIL,
+          payload: response.data
+        });
       })
       .catch(response => {
         console.log("hurr durr Im an error and need to be handled", response);
@@ -146,11 +147,25 @@ export const getPrescriptionDetail = prescriptionId => {
   };
 };
 
+export const updatePrescriptionDetail = (putData, navigationCallback) => {
+  return dispatch => {
+    axios.put(`${BASE_URL}/Api/Prescription/UpdatePrescription`, putData)
+    .then(response => {
+      console.log("update success", response)
+      if (navigationCallback)
+        navigationCallback()
+    })
+    .catch(response => {
+      console.log("hurr durr Im an error and need to be handled", response);
+    })
+  }
+}
+
 export const searching = () => {
   return {
     type: MEDICINE_SEARCHING
-  }
-}
+  };
+};
 
 export function clearMedicineData() {
   return {

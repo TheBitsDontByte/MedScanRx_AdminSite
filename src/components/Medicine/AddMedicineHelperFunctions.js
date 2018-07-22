@@ -37,11 +37,11 @@ const calculateAlertsStartingToday = ({
 const calculateAlertsStartingTomorrow = ({
   scheduledAlerts,
   originalNumberOfDoses,
-  dosesPerDay
 }) => {
   let allAlerts = [];
   let daysToAdd = 1;
-
+  let dosesPerDay = scheduledAlerts.length
+console.log("tommorow values", scheduledAlerts, originalNumberOfDoses, dosesPerDay)
   for (let i = 0; i < originalNumberOfDoses; i++) {
     if (i !== 0 && i % dosesPerDay == 0) daysToAdd++;
     let nextAlert = moment(scheduledAlerts[i % dosesPerDay])
@@ -54,7 +54,21 @@ const calculateAlertsStartingTomorrow = ({
   return allAlerts;
 };
 
-export const calculateAlerts = values => {
+export const calculateAlerts = (values, editing) => {
+  if (editing) {
+    return values.startDay === "today"
+      ? calculateAlertsStartingToday({
+          scheduledAlerts: values.scheduledAlerts,
+          originalNumberOfDoses: values.currentNumberOfDoses,
+          dosesPerDay: values.dosesPerDay
+        })
+      : calculateAlertsStartingTomorrow({
+          scheduledAlerts: values.scheduledAlerts,
+          originalNumberOfDoses: values.currentNumberOfDoses,
+          dosesPerDay: values.dosesPerDay
+        });
+  }
+
   return values.startDay === "today"
     ? calculateAlertsStartingToday(values)
     : calculateAlertsStartingTomorrow(values);

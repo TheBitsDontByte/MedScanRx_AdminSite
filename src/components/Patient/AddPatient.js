@@ -66,10 +66,6 @@ class AddPatient extends Component {
   }
 
   render() {
-
-    console.log("Props in adds render, and state", this.props, this.state )
-
-
     const { handleSubmit, noSuccess, errors } = this.props;
     
     return (
