@@ -1,11 +1,9 @@
 import React, { Component } from "react";
-import LabeledText from "../shared/LabeledText";
 import { Button } from "react-bootstrap";
-import { Link } from "react-router-dom";
+import { Link, Prompt } from "react-router-dom";
 import { connect } from "react-redux";
 import { reduxForm } from "redux-form";
 import _ from "lodash";
-import moment from "moment";
 
 import { getPatient } from "../../actions/patient-actions";
 import {
@@ -91,6 +89,10 @@ class AddMedicine extends Component {
             </form>
           </div>
         </div>
+        <Prompt
+          when={ (this.props.anyTouched && !this.props.submitSucceeded) || this.props.noSuccess == true  }
+          message={"Navigating away will clear all your data. Continue ?"}
+        />
       </div>
     );
   }

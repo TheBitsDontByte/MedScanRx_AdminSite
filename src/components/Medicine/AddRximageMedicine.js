@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import LabeledText from "../shared/LabeledText";
 import { Button, Thumbnail } from "react-bootstrap";
-import { Link } from "react-router-dom";
+import { Link, Prompt} from "react-router-dom";
 import { connect } from "react-redux";
 import { reduxForm } from "redux-form";
 import _ from "lodash";
@@ -38,12 +38,6 @@ class AddMedicine extends Component {
   }
 
   onSubmit(values) {
-    if (!this.state.selectedOpenFdaResult) {
-      this.setState({ selectedOpenFdaResultError: true });
-      return;
-    }
-    this.setState({ selectedOpenFdaResultError: null });
-
     let postData = {
       ...values,
       scheduledAlerts: calculateAlerts(values),
@@ -52,6 +46,7 @@ class AddMedicine extends Component {
       imageUrl: this.props.imageUrl,
     };
 
+    console.log(postData)
     this.props.savePrescription(postData, this.props.history.push);
   }
 
@@ -97,7 +92,7 @@ class AddMedicine extends Component {
       );
 
     if (!this.props.ndc) this.props.history.push("/RedirectPage");
-
+      console.log("props for addimage", this.props)
     return (
       <div className="row">
         <h1>
@@ -202,6 +197,10 @@ class AddMedicine extends Component {
             </form>
           </div>
         </div>
+        <Prompt
+          when={ (this.props.anyTouched && !this.props.submitSucceeded) || this.props.noSuccess == true  }
+          message={"Navigating away will clear all your data. Continue ?"}
+        />
       </div>
     );
   }

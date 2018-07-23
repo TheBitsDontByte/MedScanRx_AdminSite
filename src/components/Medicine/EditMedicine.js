@@ -3,36 +3,50 @@ import { reduxForm } from "redux-form";
 import { connect } from "react-redux";
 import { getPrescriptionDetail } from "../../actions/medicine-actions";
 import { Thumbnail, Button } from "react-bootstrap";
-import { Link } from "react-router-dom";
-import _ from 'lodash';
+import { Link, Prompt } from "react-router-dom";
+import _ from "lodash";
 
 import AddEditMedicineFields from "../shared/AddEditMedicineFields";
 import NoImage from "../../media/No_image.svg";
-import { updatePrescriptionDetail } from '../../actions/medicine-actions'
-import {calculateAlerts} from './AddMedicineHelperFunctions'
-
-
+import {
+  updatePrescriptionDetail,
+  deletePrescription
+} from "../../actions/medicine-actions";
+import { calculateAlerts } from "./AddMedicineHelperFunctions";
 
 class EditMedicine extends Component {
-  state = {editingAlerts: false}
+  state = { editingAlerts: false, isDeleting: false };
 
   onEditAlertsClick() {
-    this.setState({editingAlerts: true})
+    this.setState({ editingAlerts: true });
   }
 
   componentWillMount() {
     this.props.getPrescriptionDetail(this.props.match.params.prescriptionId);
   }
 
+  handleDeleteClick() {
+    let confirmed = window.confirm(
+      "Are you sure you want to delete this prescription ?"
+    );
+    let { prescriptionId, patientId } = this.props.match.params;
+    if (confirmed) {
+      this.setState({isDeleting: true})
+      this.props.deletePrescription(prescriptionId, patientId, () =>
+        this.props.history.replace(`/Patient/${patientId}`)
+      );
+    }
+  }
+
   handleEditSubmit(values) {
-    let putData = {...values};
+    let putData = { ...values };
     if (putData.scheduledAlerts)
       putData.scheduledAlerts = calculateAlerts(putData, true);
 
-    console.log("Submitting", this.props.history)
-    this.props.updatePrescriptionDetail(putData, this.props.history.goBack);
+    this.props.updatePrescriptionDetail(putData, () =>
+      this.props.history.replace(`/Patient/${putData.patientId}`)
+    );
   }
-
 
   render() {
     let { prescriptionDetail } = this.props;
@@ -44,10 +58,20 @@ class EditMedicine extends Component {
         </div>
       );
     }
-   
+
     return (
       <div className="row">
         <h2>Edit {prescriptionDetail.prescriptionName}</h2>
+        <Button
+          onClick={this.handleDeleteClick.bind(this)}
+          bsStyle="danger margin-right"
+        >
+          Delete Prescription
+        </Button>
+        <span style={{ fontSize: 20 }} className="margin-right text-danger">
+          This should ONLY be used when changing the NDC or RxImage or when the
+          patient stops taking the medicine
+        </span>
         <div className="row">
           <div className="col-sm-6">
             <h3>Medicine Image</h3>
@@ -85,8 +109,16 @@ class EditMedicine extends Component {
           </div>
           <div className="col-sm-6">
             <div className="row">
-              <form onSubmit={this.props.handleSubmit(this.handleEditSubmit.bind(this))}>
-                <AddEditMedicineFields editing={true} editingAlerts={this.state.editingAlerts} onEditAlertsClick={this.onEditAlertsClick.bind(this)}/>
+              <form
+                onSubmit={this.props.handleSubmit(
+                  this.handleEditSubmit.bind(this)
+                )}
+              >
+                <AddEditMedicineFields
+                  editing={true}
+                  editingAlerts={this.state.editingAlerts}
+                  onEditAlertsClick={this.onEditAlertsClick.bind(this)}
+                />
                 <div className="col-sm-12">
                   <Button
                     type="submit"
@@ -117,16 +149,23 @@ class EditMedicine extends Component {
             <div className="row" />
           </div>
         </div>
+        <Prompt
+          when={
+            ((this.props.anyTouched && !this.props.submitSucceeded) ||
+            this.props.noSuccess == true) && !this.state.isDeleting
+          }
+          message={"Navigating away will clear all your data. Continue ?"}
+        />
       </div>
     );
   }
 }
 
 const validate = values => {
-  console.log(values);
   let errors = {};
 
-  if (!values.ndc || values.ndc == "") errors.ndc = "Please select the correct NDC";
+  if (!values.ndc || values.ndc == "")
+    errors.ndc = "Please select the correct NDC";
 
   if (!values.prescriptionName)
     errors.prescriptionName = "Prescription Name is required";
@@ -167,9 +206,9 @@ const validate = values => {
       _error: "Duplicate alert times are not allowed"
     };
 
-  console.log("errors", errors)
+  console.log("errors", errors);
   return errors;
-}
+};
 
 const mapStateToProps = (state, ownProps) => {
   if (state.medicine.prescriptionDetail) {
@@ -183,10 +222,10 @@ const mapStateToProps = (state, ownProps) => {
     };
   }
 
-  return{};
+  return {};
 };
 
 export default connect(
   mapStateToProps,
-  { getPrescriptionDetail, updatePrescriptionDetail }
-)(reduxForm({validate, form: "EditMedicine" })(EditMedicine));
+  { getPrescriptionDetail, updatePrescriptionDetail, deletePrescription }
+)(reduxForm({ validate, form: "EditMedicine" })(EditMedicine));

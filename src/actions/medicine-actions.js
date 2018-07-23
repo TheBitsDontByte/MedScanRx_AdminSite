@@ -149,17 +149,34 @@ export const getPrescriptionDetail = prescriptionId => {
 
 export const updatePrescriptionDetail = (putData, navigationCallback) => {
   return dispatch => {
-    axios.put(`${BASE_URL}/Api/Prescription/UpdatePrescription`, putData)
+    axios
+      .put(`${BASE_URL}/Api/Prescription/UpdatePrescription`, putData)
+      .then(response => {
+        console.log("update success", response);
+        if (navigationCallback) navigationCallback();
+      })
+      .catch(response => {
+        console.log("hurr durr Im an error and need to be handled", response);
+      });
+  };
+};
+
+export const deletePrescription = (prescriptionId, patientId, navigationCallback) => {
+  console.log(prescriptionId, patientId, navigationCallback)
+  return dispatch => {
+    axios.delete(
+      `${BASE_URL}/Api/Prescription/DeletePrescription?prescriptionId=${prescriptionId}&patientId=${patientId}`
+    )
     .then(response => {
-      console.log("update success", response)
-      if (navigationCallback)
+
+      if(navigationCallback)
         navigationCallback()
     })
     .catch(response => {
-      console.log("hurr durr Im an error and need to be handled", response);
-    })
-  }
-}
+
+    });
+  };
+};
 
 export const searching = () => {
   return {
