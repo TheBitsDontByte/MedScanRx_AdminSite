@@ -12,10 +12,11 @@ import {
 } from "../../actions/medicine-actions";
 import AddEditMedicineFields from "../shared/AddEditMedicineFields";
 import OpenFdaMedicineInfo from "../shared/OpenFdaMedicineInfo";
+import MedicineConfirmModal from "./MedicineConfirmModal";
 import { calculateAlerts } from "./AddMedicineHelperFunctions";
 
 class AddMedicine extends Component {
-  state = { allMedicineInfo: null };
+  state = { allMedicineInfo: null, showModal: false };
 
   componentWillMount() {
     this.props.getPatient(this.props.match.params.patientId);
@@ -26,15 +27,25 @@ class AddMedicine extends Component {
   }
 
   onSubmit(values) {
-    console.log("Sumbitting, props", this.props)
-    let postData = {
+    console.log("Sumbitting, props", this.props);
+    let prescriptionDetails = {
       ...values,
       scheduledAlerts: calculateAlerts(values),
       patientId: this.props.patientId,
       rxcui: this.props.rxcui[0]
     };
 
-    this.props.savePrescription(postData, this.props.history.push);
+    this.setState({ prescriptionDetails, showModal: true });
+  }
+
+  savePrescription() {
+    this.setState({ showModal: false });
+    console.log("Saving prescription");
+    this.props.savePrescription(this.state.prescriptionDetails, this.props.history.push);
+  }
+
+  closeModal() {
+    this.setState({ showModal: false });
   }
 
   render() {
@@ -53,7 +64,8 @@ class AddMedicine extends Component {
     return (
       <div className="row">
         <h1>
-          Add {this.props.medicineDetails.openfda.brand_name} to {this.props.fullName}
+          Add {this.props.medicineDetails.openfda.brand_name} to{" "}
+          {this.props.fullName}
         </h1>
         <div className="row">
           <div className="col-sm-5">
@@ -89,8 +101,19 @@ class AddMedicine extends Component {
             </form>
           </div>
         </div>
+        {this.state.prescriptionDetails && (
+          <MedicineConfirmModal
+            showModal={this.state.showModal}
+            closeModal={this.closeModal.bind(this)}
+            savePrescription={this.savePrescription.bind(this)}
+            prescriptionDetails={this.state.prescriptionDetails}
+          />
+        )}
         <Prompt
-          when={ (this.props.anyTouched && !this.props.submitSucceeded) || this.props.noSuccess == true  }
+          when={
+            (this.props.anyTouched && !this.props.submitSucceeded) ||
+            this.props.noSuccess == true
+          }
           message={"Navigating away will clear all your data. Continue ?"}
         />
       </div>
@@ -111,17 +134,15 @@ const mapStateToProps = (state, ownProps) => {
       ndc: openfda.package_ndc,
       rxcui: openfda.rxcui,
       route: openfda.route,
-      type: openfda.product_type,
+      type: openfda.product_type
     };
   } else if (state.patients.patientDetails) {
     return {
       patientId: state.patients.patientDetails.patientId,
-      fullName: state.patients.patientDetails.fullName,
-
+      fullName: state.patients.patientDetails.fullName
     };
   }
-  return {
-  };
+  return {};
 };
 
 function validate(values) {
@@ -173,7 +194,7 @@ function validate(values) {
 
 export default reduxForm({
   form: "AddMedicine",
-  validate,
+  validate
 })(
   connect(
     mapStateToProps,

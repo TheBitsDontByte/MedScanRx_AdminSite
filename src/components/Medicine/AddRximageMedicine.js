@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import LabeledText from "../shared/LabeledText";
 import { Button, Thumbnail } from "react-bootstrap";
-import { Link, Prompt} from "react-router-dom";
+import { Link, Prompt } from "react-router-dom";
 import { connect } from "react-redux";
 import { reduxForm } from "redux-form";
 import _ from "lodash";
@@ -13,8 +13,9 @@ import {
 } from "../../actions/medicine-actions";
 import AddEditMedicineFields from "../shared/AddEditMedicineFields";
 import OpenFdaMedicineInfo from "../shared/OpenFdaMedicineInfo";
+import MedicineConfirmModal from "./MedicineConfirmModal";
 
-import { calculateAlerts } from "./AddMedicineHelperFunctions"
+import { calculateAlerts } from "./AddMedicineHelperFunctions";
 
 //REFACTOR THIS MONSTROSITY :O
 class AddMedicine extends Component {
@@ -24,7 +25,8 @@ class AddMedicine extends Component {
     showFilteredOpenFdaResults: false,
     showSelectedOpenFdaResult: false,
     selectedOpenFdaResultError: null,
-    filteredResults: null
+    filteredResults: null,
+    showModal: false
   };
 
   componentWillMount() {
@@ -38,16 +40,29 @@ class AddMedicine extends Component {
   }
 
   onSubmit(values) {
-    let postData = {
+    let prescriptionDetails = {
       ...values,
       scheduledAlerts: calculateAlerts(values),
       patientId: this.props.patientId,
       rxcui: this.props.rxcui,
-      imageUrl: this.props.imageUrl,
+      imageUrl: this.props.imageUrl
     };
 
-    console.log(postData)
-    this.props.savePrescription(postData, this.props.history.push);
+    this.setState({ prescriptionDetails, showModal: true });
+  }
+
+  savePrescription() {
+    console.log("prescriptionDetails", this.state.prescriptionDetails)
+
+    this.setState({ showModal: false });
+    this.props.savePrescription(
+      this.state.prescriptionDetails,
+      this.props.history.push
+    );
+  }
+
+  closeModal() {
+    this.setState({ showModal: false });
   }
 
   handleFilterTermChange(event) {
@@ -72,7 +87,6 @@ class AddMedicine extends Component {
       filteredResults
     });
   }
-  S;
 
   handleFilteredOpenfdaResultClick(index) {
     this.setState({
@@ -92,7 +106,6 @@ class AddMedicine extends Component {
       );
 
     if (!this.props.ndc) this.props.history.push("/RedirectPage");
-      console.log("props for addimage", this.props)
     return (
       <div className="row">
         <h1>
@@ -132,17 +145,12 @@ class AddMedicine extends Component {
               {this.state.showFilteredOpenFdaResults &&
                 _.map(
                   this.state.filteredResults,
-                  (
-                    {
-                      openfda: {
-                        package_ndc,
-                        brand_name,
-                      }
-                    },
-                    index
-                  ) => {
+                  ({ openfda: { package_ndc, brand_name } }, index) => {
                     return (
-                      <div key={package_ndc} className="col-md-offset-1 col-md-10 margin-top">
+                      <div
+                        key={package_ndc}
+                        className="col-md-offset-1 col-md-10 margin-top"
+                      >
                         <li
                           className="list-group-item"
                           onClick={() =>
@@ -197,8 +205,19 @@ class AddMedicine extends Component {
             </form>
           </div>
         </div>
+        {this.state.prescriptionDetails && (
+          <MedicineConfirmModal
+            showModal={this.state.showModal}
+            closeModal={this.closeModal.bind(this)}
+            savePrescription={this.savePrescription.bind(this)}
+            prescriptionDetails={this.state.prescriptionDetails}
+          />
+        )}
         <Prompt
-          when={ (this.props.anyTouched && !this.props.submitSucceeded) || this.props.noSuccess == true  }
+          when={
+            (this.props.anyTouched && !this.props.submitSucceeded) ||
+            this.props.noSuccess == true
+          }
           message={"Navigating away will clear all your data. Continue ?"}
         />
       </div>

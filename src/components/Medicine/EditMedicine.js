@@ -5,6 +5,7 @@ import { getPrescriptionDetail } from "../../actions/medicine-actions";
 import { Thumbnail, Button } from "react-bootstrap";
 import { Link, Prompt } from "react-router-dom";
 import _ from "lodash";
+import moment from "moment";
 
 import AddEditMedicineFields from "../shared/AddEditMedicineFields";
 import NoImage from "../../media/No_image.svg";
@@ -12,10 +13,11 @@ import {
   updatePrescriptionDetail,
   deletePrescription
 } from "../../actions/medicine-actions";
+import MedicineConfirmModal from "./MedicineConfirmModal";
 import { calculateAlerts } from "./AddMedicineHelperFunctions";
 
 class EditMedicine extends Component {
-  state = { editingAlerts: false, isDeleting: false };
+  state = { editingAlerts: false, isDeleting: false, showModal: false };
 
   onEditAlertsClick() {
     this.setState({ editingAlerts: true });
@@ -29,9 +31,9 @@ class EditMedicine extends Component {
     let confirmed = window.confirm(
       "Are you sure you want to delete this prescription ?"
     );
-    let { prescriptionId, patientId } = this.props.match.params;
     if (confirmed) {
-      this.setState({isDeleting: true})
+      let { prescriptionId, patientId } = this.props.match.params;
+      this.setState({ isDeleting: true });
       this.props.deletePrescription(prescriptionId, patientId, () =>
         this.props.history.replace(`/Patient/${patientId}`)
       );
@@ -39,13 +41,26 @@ class EditMedicine extends Component {
   }
 
   handleEditSubmit(values) {
-    let putData = { ...values };
-    if (putData.scheduledAlerts)
-      putData.scheduledAlerts = calculateAlerts(putData, true);
+    let prescriptionDetails = { ...values };
+    if (prescriptionDetails.scheduledAlerts)
+      prescriptionDetails.scheduledAlerts = calculateAlerts(
+        prescriptionDetails,
+        true
+      );
 
-    this.props.updatePrescriptionDetail(putData, () =>
-      this.props.history.replace(`/Patient/${putData.patientId}`)
+    this.setState({ prescriptionDetails, showModal: true });
+  }
+
+  savePrescription() {
+    this.setState({ showModal: false });
+    let { prescriptionDetails } = this.state;
+    this.props.updatePrescriptionDetail(prescriptionDetails, () =>
+      this.props.history.replace(`/Patient/${prescriptionDetails.patientId}`)
     );
+  }
+
+  closeModal() {
+    this.setState({ showModal: false });
   }
 
   render() {
@@ -58,7 +73,7 @@ class EditMedicine extends Component {
         </div>
       );
     }
-
+    console.log("In edit, the deets", prescriptionDetail);
     return (
       <div className="row">
         <h2>Edit {prescriptionDetail.prescriptionName}</h2>
@@ -95,11 +110,13 @@ class EditMedicine extends Component {
                     </tr>
                   </thead>
                   <tbody>
-                    {prescriptionDetail.scheduledAlerts.map(alert => (
+                    {prescriptionDetail.scheduledAlerts.map(({alertDateTime, takenDateTime, isActive}) => (
                       <tr>
-                        <td>{alert}</td>
-                        <td>Implement</td>
-                        <td>Implement</td>
+                        <td>
+                        {moment(alertDateTime).format("MMMM Do, h:mm:ss a")}
+                        </td>
+                        <td>{isActive ? "Yes" : "No"} </td>
+                        <td>{takenDateTime ? "Yes" : "No"} </td>
                       </tr>
                     ))}
                   </tbody>
@@ -149,10 +166,19 @@ class EditMedicine extends Component {
             <div className="row" />
           </div>
         </div>
+        {this.state.prescriptionDetails && (
+          <MedicineConfirmModal
+            showModal={this.state.showModal}
+            closeModal={this.closeModal.bind(this)}
+            savePrescription={this.savePrescription.bind(this)}
+            prescriptionDetails={this.state.prescriptionDetails}
+          />
+        )}
         <Prompt
           when={
             ((this.props.anyTouched && !this.props.submitSucceeded) ||
-            this.props.noSuccess == true) && !this.state.isDeleting
+              this.props.noSuccess == true) &&
+            !this.state.isDeleting
           }
           message={"Navigating away will clear all your data. Continue ?"}
         />
