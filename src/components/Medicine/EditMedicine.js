@@ -15,6 +15,7 @@ import {
 } from "../../actions/medicine-actions";
 import MedicineConfirmModal from "./MedicineConfirmModal";
 import { calculateAlerts } from "./AddMedicineHelperFunctions";
+import ErrorBanner from "../shared/ErrorBanner";
 
 class EditMedicine extends Component {
   state = { editingAlerts: false, isDeleting: false, showModal: false };
@@ -54,6 +55,7 @@ class EditMedicine extends Component {
   savePrescription() {
     this.setState({ showModal: false });
     let { prescriptionDetails } = this.state;
+    console.log("Saving prescription", prescriptionDetails)
     this.props.updatePrescriptionDetail(prescriptionDetails, () =>
       this.props.history.replace(`/Patient/${prescriptionDetails.patientId}`)
     );
@@ -63,8 +65,29 @@ class EditMedicine extends Component {
     this.setState({ showModal: false });
   }
 
+  renderError() {
+    return (
+      <div className="row">
+        <ErrorBanner
+          errors={this.props.errors}
+        />
+        <Link
+          to={`/MainMenu`}
+          className="btn pull-right btn-danger margin-right"
+          style={{ marginTop: 20 }}
+        >
+          Main Menu
+        </Link>
+      </div>
+    );
+  }
+
   render() {
     let { prescriptionDetail } = this.props;
+
+    if (this.props.noSuccess && !prescriptionDetail) {
+      return this.renderError();
+    }
 
     if (!prescriptionDetail) {
       return (
@@ -73,7 +96,9 @@ class EditMedicine extends Component {
         </div>
       );
     }
-    console.log("In edit, the deets", prescriptionDetail);
+
+    this.props.noSuccess && this.props.errors && window.scrollTo(0, 0)
+    
     return (
       <div className="row">
         <h2>Edit {prescriptionDetail.prescriptionName}</h2>
@@ -87,6 +112,7 @@ class EditMedicine extends Component {
           This should ONLY be used when changing the NDC or RxImage or when the
           patient stops taking the medicine
         </span>
+        <ErrorBanner errors={this.props.errors} />
         <div className="row">
           <div className="col-sm-6">
             <h3>Medicine Image</h3>
@@ -110,15 +136,17 @@ class EditMedicine extends Component {
                     </tr>
                   </thead>
                   <tbody>
-                    {prescriptionDetail.scheduledAlerts.map(({alertDateTime, takenDateTime, isActive}) => (
-                      <tr>
-                        <td>
-                        {moment(alertDateTime).format("MMMM Do, h:mm:ss a")}
-                        </td>
-                        <td>{isActive ? "Yes" : "No"} </td>
-                        <td>{takenDateTime ? "Yes" : "No"} </td>
-                      </tr>
-                    ))}
+                    {prescriptionDetail.scheduledAlerts.map(
+                      ({ alertDateTime, takenDateTime, isActive }) => (
+                        <tr>
+                          <td>
+                            {moment(alertDateTime).format("MMMM Do, h:mm:ss a")}
+                          </td>
+                          <td>{isActive ? "Yes" : "No"} </td>
+                          <td>{takenDateTime ? "Yes" : "No"} </td>
+                        </tr>
+                      )
+                    )}
                   </tbody>
                 </table>
               )}
@@ -232,7 +260,6 @@ const validate = values => {
       _error: "Duplicate alert times are not allowed"
     };
 
-  console.log("errors", errors);
   return errors;
 };
 
@@ -244,11 +271,16 @@ const mapStateToProps = (state, ownProps) => {
         ...state.medicine.prescriptionDetail,
         dosesPerDay: 3,
         scheduledAlerts: null
-      }
+      },
+      noSuccess: state.medicine.noSuccess,
+      errors: state.medicine.errors
     };
   }
 
-  return {};
+  return {
+    noSuccess: state.medicine.noSuccess,
+    errors: state.medicine.errors
+  };
 };
 
 export default connect(

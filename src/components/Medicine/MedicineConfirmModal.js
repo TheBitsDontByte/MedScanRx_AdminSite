@@ -65,22 +65,33 @@ class MedicineConfirmModal extends Component {
             <br />
           </div>
           <h4>Scheduled Alerts</h4>
-
-          <div className="col-xs-offset-1">
-            {prescriptionDetails.scheduledAlerts &&
-              prescriptionDetails.scheduledAlerts.map((alert, index) => (
-                <div>
-                  {" "}
-                  Alert #{index + 1}{" "}
-                  {moment(alert.alertDateTime, "YYYYMMDD HH:mm:ss").format(
-                    "MMMM Do, h:mm:ss a"
-                  )}
-                </div>
-              ))}
-            {!prescriptionDetails.scheduledAlerts && (
-              <div> No changes to alerts </div>
-            )}
-            <br />
+          <div className="row">
+            <div className="col-xs-offset-1 col-sm-9">
+              <table className="table table-striped table-bordered ">
+                <thead>
+                  <th>Alert</th>
+                  <th>Time</th>
+                </thead>
+                <tbody>
+                  {prescriptionDetails.scheduledAlerts &&
+                    prescriptionDetails.scheduledAlerts.map((alert, index) => (
+                      <tr>
+                        <td>Alert #{index + 1} </td>
+                        <td>
+                          {moment(
+                            alert.alertDateTime,
+                            "YYYYMMDD HH:mm:ss"
+                          ).format("MMMM Do, h:mm:ss a")}
+                        </td>
+                      </tr>
+                    ))}
+                </tbody>
+              </table>
+              {!prescriptionDetails.scheduledAlerts && (
+                <div> No changes to alerts </div>
+              )}
+              <br />
+            </div>
           </div>
         </Modal.Body>
 

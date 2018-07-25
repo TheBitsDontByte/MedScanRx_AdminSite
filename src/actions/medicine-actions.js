@@ -15,6 +15,11 @@ export const UPDATE_PRESCRIPTION = "update_prescription";
 export const DELETE_PRESCRIPTION = "delete_prescription";
 export const SEARCH_ERROR = "search_error";
 export const SEARCH_OPENFDA = "search_openfda";
+export const SAVE_PRESCRIPTION_ERROR = "save_prescription_error";
+export const GET_PRESCRIPTIONS_ERROR = "get_prescriptions_error";
+export const GET_PRESCRIPTION_ERROR = "get_prescription_error";
+export const UPDATE_PRESCRIPTION_ERROR = "update_prescription_error";
+export const DELETE_PRESCRIPTION_ERROR = "delete_prescription_error";
 
 export function searchOpenFDA(postData, navigationCallback) {
   return dispatch => {
@@ -88,15 +93,18 @@ export function savePrescription(postData, navigationCallback) {
     axios
       .post(`${BASE_URL}/Api/Prescription/Save`, postData)
       .then(response => {
-        if (response.status == 200) {
-          dispatch({
-            type: SAVE_PRESCRIPTION
-          });
-          if (navigationCallback)
-            navigationCallback("/Patient/" + postData.patientId);
-        }
+        dispatch({
+          type: SAVE_PRESCRIPTION
+        });
+        if (navigationCallback)
+          navigationCallback("/Patient/" + postData.patientId);
       })
-      .catch(response => {});
+      .catch(error => {
+        let errorMessages = error.response
+          ? error.response.data.errors
+          : NETWORK_ERROR_MESSAGE;
+        dispatch({ type: SAVE_PRESCRIPTION_ERROR, payload: errorMessages });
+      });
   };
 }
 
@@ -119,14 +127,16 @@ export function getPrescriptions(patientId) {
     axios
       .get(`${BASE_URL}/Api/Prescription/Prescriptions/${patientId}`)
       .then(response => {
-        console.log("Response for get all prescrip", response);
         dispatch({
           type: GET_PRESCRIPTIONS,
           payload: response.data
         });
       })
-      .catch(response => {
-        console.log("Need error handling all up in prescriptions :\\");
+      .catch(error => {
+        let errorMessages = error.response
+          ? error.response.data.errors
+          : NETWORK_ERROR_MESSAGE;
+        dispatch({ type: GET_PRESCRIPTIONS_ERROR, payload: errorMessages });
       });
   };
 }
@@ -141,8 +151,11 @@ export const getPrescriptionDetail = prescriptionId => {
           payload: response.data
         });
       })
-      .catch(response => {
-        console.log("hurr durr Im an error and need to be handled", response);
+      .catch(error => {
+        let errorMessages = error.response
+          ? error.response.data.errors
+          : NETWORK_ERROR_MESSAGE;
+        dispatch({ type: GET_PRESCRIPTION_ERROR, payload: errorMessages });
       });
   };
 };
@@ -152,29 +165,36 @@ export const updatePrescriptionDetail = (putData, navigationCallback) => {
     axios
       .put(`${BASE_URL}/Api/Prescription/UpdatePrescription`, putData)
       .then(response => {
-        console.log("update success", response);
         if (navigationCallback) navigationCallback();
       })
-      .catch(response => {
-        console.log("hurr durr Im an error and need to be handled", response);
+      .catch(error => {
+        let errorMessages = error.response
+          ? error.response.data.errors
+          : NETWORK_ERROR_MESSAGE;
+        dispatch({ type: UPDATE_PRESCRIPTION_ERROR, payload: errorMessages });
       });
   };
 };
 
-export const deletePrescription = (prescriptionId, patientId, navigationCallback) => {
-  console.log(prescriptionId, patientId, navigationCallback)
+export const deletePrescription = (
+  prescriptionId,
+  patientId,
+  navigationCallback
+) => {
   return dispatch => {
-    axios.delete(
-      `${BASE_URL}/Api/Prescription/DeletePrescription?prescriptionId=${prescriptionId}&patientId=${patientId}`
-    )
-    .then(response => {
-
-      if(navigationCallback)
-        navigationCallback()
-    })
-    .catch(response => {
-
-    });
+    axios
+      .delete(
+        `${BASE_URL}/Api/Prescription/DeletePrescription?prescriptionId=${prescriptionId}&patientId=${patientId}`
+      )
+      .then(response => {
+        if (navigationCallback) navigationCallback();
+      })
+      .catch(error => {
+        let errorMessages = error.response
+          ? error.response.data.errors
+          : NETWORK_ERROR_MESSAGE;
+        dispatch({ type: DELETE_PRESCRIPTION_ERROR, payload: errorMessages });
+      });
   };
 };
 

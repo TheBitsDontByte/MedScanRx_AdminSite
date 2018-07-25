@@ -8,8 +8,14 @@ import {
   GET_PRESCRIPTION_DETAIL,
   UPDATE_PRESCRIPTION,
   SEARCH_RXIMAGE,
-  MEDICINE_SEARCHING
+  MEDICINE_SEARCHING,
+  SAVE_PRESCRIPTION_ERROR,
+  GET_PRESCRIPTIONS_ERROR,
+  GET_PRESCRIPTION_ERROR,
+  UPDATE_PRESCRIPTION_ERROR,
+  DELETE_PRESCRIPTION_ERROR
 } from "../actions/medicine-actions";
+import { UPDATE_PATIENT_ERROR } from "../actions/patient-actions";
 
 const initialState = {
   openfdaSearchResults: null,
@@ -17,6 +23,7 @@ const initialState = {
   prescriptionsDetail: null,
   prescriptionDetail: null,
   noSuccess: null,
+  errors: null,
   isSearching: null
 };
 
@@ -40,6 +47,12 @@ export default function(state = initialState, action) {
       return { isSearching: true };
     case CLEAR_MEDICINE_DATA:
       return initialState;
+    case SAVE_PRESCRIPTION_ERROR:
+    case GET_PRESCRIPTIONS_ERROR:
+    case GET_PRESCRIPTION_ERROR:
+    case UPDATE_PRESCRIPTION_ERROR:
+    case DELETE_PRESCRIPTION_ERROR:
+      return { ...state, noSuccess: true, errors: action.payload}
     default:
       return state;
   }

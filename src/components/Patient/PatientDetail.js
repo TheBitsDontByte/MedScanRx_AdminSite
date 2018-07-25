@@ -36,7 +36,7 @@ class PatientDetail extends Component {
   renderError() {
     return (
       <div className="row">
-        <ErrorBanner errors={this.props.patientErrors} />
+        <ErrorBanner errors={this.props.patientErrors || this.props.prescriptionErrors} />
         <Link
           to="/MainMenu"
           className="btn pull-right btn-danger margin-right"
@@ -49,7 +49,7 @@ class PatientDetail extends Component {
   }
 
   render() {
-    if (this.props.patientNoSuccess) {
+    if (this.props.patientNoSuccess || this.props.prescriptionNoSuccess) {
       return this.renderError();
     }
 
@@ -118,7 +118,9 @@ function mapStateToProps(state, ownProps) {
     patientDetail: state.patients.patientDetails,
     prescriptionsDetail: state.medicine.prescriptionsDetail,
     patientNoSuccess: state.patients.noSuccess,
-    patientErrors: state.patients.errors
+    patientErrors: state.patients.errors,
+    prescriptionErrors: state.medicine.errors,
+    prescriptionNoSuccess: state.medicine.noSuccess
   };
 }
 

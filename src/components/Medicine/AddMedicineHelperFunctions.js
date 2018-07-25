@@ -26,9 +26,8 @@ const calculateAlertsStartingToday = ({
     if (i !== 0 && i % dosesPerDay == 0) daysToAdd++;
     let nextAlert = moment(scheduledAlerts[i % dosesPerDay])
       .add(daysToAdd, "day")
-      .format("YYYYMMDD HH:mm:ss");
 
-    allAlerts.push({alertDateTime: nextAlert});
+      allAlerts.push({alertDateTime: new Date(nextAlert), takenDateTime: null, isActive: true});
   }
 
   return allAlerts;
@@ -45,9 +44,8 @@ const calculateAlertsStartingTomorrow = ({
     if (i !== 0 && i % dosesPerDay == 0) daysToAdd++;
     let nextAlert = moment(scheduledAlerts[i % dosesPerDay])
       .add(daysToAdd, "day")
-      .format("YYYYMMDD HH:mm:ss");
 
-    allAlerts.push({alertDateTime: nextAlert});
+    allAlerts.push({alertDateTime: new Date(nextAlert), takenDateTime: null, isActive: true});
   }
 
   return allAlerts;

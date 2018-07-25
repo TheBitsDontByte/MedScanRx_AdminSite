@@ -13,13 +13,23 @@ import {
 import AddEditMedicineFields from "../shared/AddEditMedicineFields";
 import OpenFdaMedicineInfo from "../shared/OpenFdaMedicineInfo";
 import MedicineConfirmModal from "./MedicineConfirmModal";
+import ErrorBanner from "../shared/ErrorBanner";
+
 import { calculateAlerts } from "./AddMedicineHelperFunctions";
 
 class AddMedicine extends Component {
   state = { allMedicineInfo: null, showModal: false };
 
   componentWillMount() {
+    window.scrollTo(0, 0);
+
     this.props.getPatient(this.props.match.params.patientId);
+  }
+
+  componentWillReceiveProps() {
+    if (this.props.noSuccess && this.props.errors) {
+      window.scrollTo(0, 0);
+    }
   }
 
   handleAdditionalDetailChange(event) {
@@ -27,7 +37,6 @@ class AddMedicine extends Component {
   }
 
   onSubmit(values) {
-    console.log("Sumbitting, props", this.props);
     let prescriptionDetails = {
       ...values,
       scheduledAlerts: calculateAlerts(values),
@@ -67,6 +76,7 @@ class AddMedicine extends Component {
           Add {this.props.medicineDetails.openfda.brand_name} to{" "}
           {this.props.fullName}
         </h1>
+        {this.props.noSuccess && <ErrorBanner errors={this.props.errors} />}
         <div className="row">
           <div className="col-sm-5">
             <h3>Open FDA's Medicine Information</h3>
@@ -134,7 +144,9 @@ const mapStateToProps = (state, ownProps) => {
       ndc: openfda.package_ndc,
       rxcui: openfda.rxcui,
       route: openfda.route,
-      type: openfda.product_type
+      type: openfda.product_type,
+      noSuccess: state.medicine.noSuccess,
+      errors: state.medicine.errors
     };
   } else if (state.patients.patientDetails) {
     return {

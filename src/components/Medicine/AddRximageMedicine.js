@@ -14,6 +14,7 @@ import {
 import AddEditMedicineFields from "../shared/AddEditMedicineFields";
 import OpenFdaMedicineInfo from "../shared/OpenFdaMedicineInfo";
 import MedicineConfirmModal from "./MedicineConfirmModal";
+import ErrorBanner from "../shared/ErrorBanner";
 
 import { calculateAlerts } from "./AddMedicineHelperFunctions";
 
@@ -35,6 +36,12 @@ class AddMedicine extends Component {
     this.props.getPatient(this.props.match.params.patientId);
   }
 
+  componentWillReceiveProps() {
+    if (this.props.noSuccess && this.props.errors) {
+      window.scrollTo(0, 0);
+    }
+  }
+
   handleAdditionalDetailChange(event) {
     this.setState({ selectedAdditionalDetail: event.target.value });
   }
@@ -52,8 +59,6 @@ class AddMedicine extends Component {
   }
 
   savePrescription() {
-    console.log("prescriptionDetails", this.state.prescriptionDetails)
-
     this.setState({ showModal: false });
     this.props.savePrescription(
       this.state.prescriptionDetails,
@@ -106,11 +111,14 @@ class AddMedicine extends Component {
       );
 
     if (!this.props.ndc) this.props.history.push("/RedirectPage");
+
+    console.log("props on rximage render", this.props);
     return (
       <div className="row">
         <h1>
           Add {this.props.medicineName} to {this.props.fullName}
         </h1>
+        {this.props.noSuccess && <ErrorBanner errors={this.props.errors} />}
         <div className="row">
           <div className="form-inline col-sm-5">
             <h3>RxImage's Medicine Information</h3>
@@ -227,6 +235,7 @@ class AddMedicine extends Component {
 
 const mapStateToProps = (state, ownProps) => {
   if (state.patients.patientDetails && state.medicine.medicineDetails) {
+    console.log("returning after error");
     let { patientDetails } = state.patients;
     let medicineDetails = state.medicine.medicineDetails;
 
@@ -238,7 +247,9 @@ const mapStateToProps = (state, ownProps) => {
       rxcui: medicineDetails.rxcui,
       medicineName: medicineDetails.name,
       imageUrl: medicineDetails.imageUrl,
-      openFdaRxcuiSearchResults: state.medicine.openfdaSearchResults
+      openFdaRxcuiSearchResults: state.medicine.openfdaSearchResults,
+      noSuccess: state.medicine.noSuccess,
+      errors: state.medicine.errors
     };
   } else if (state.patients.patientDetails) {
     let { patientDetails } = state.patients;
