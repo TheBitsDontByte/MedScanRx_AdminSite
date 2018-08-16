@@ -5,11 +5,11 @@ import { Field, reduxForm } from "redux-form";
 
 import { login } from "../actions/auth-actions";
 import SubMenuBox from "./shared/SubMenuBox";
+import ErrorBanner from "./shared/ErrorBanner";
 
 class LoginPage extends Component {
   componentWillMount() {
-      if(this.props.isLoggedIn)
-        this.props.history.replace("/MainMenu")
+    if (this.props.isLoggedIn) this.props.history.replace("/MainMenu");
   }
 
   renderField(field) {
@@ -44,11 +44,13 @@ class LoginPage extends Component {
   }
 
   render() {
-    const { handleSubmit } = this.props;
+    console.log("Loginpage props", this.props);
+    const { handleSubmit, success, errors } = this.props;
     return (
       <div>
         <SubMenuBox className="login-box" label="Login" removeCenter={true}>
           <form onSubmit={handleSubmit(this.onSubmit.bind(this))}>
+            {!success && <div className="login-error-banner">{errors}</div>}
             <div>
               <Field
                 label="Username"
@@ -84,9 +86,13 @@ function validate(values) {
   return errors;
 }
 
-const mapStateToProps = (state) => {
-    return { isLoggedIn: state.authentication.isLoggedIn};
-}
+const mapStateToProps = state => {
+  return {
+    isLoggedIn: state.authentication.isLoggedIn,
+    success: state.authentication.success,
+    errors: state.authentication.errors
+  };
+};
 
 export default reduxForm({
   validate,

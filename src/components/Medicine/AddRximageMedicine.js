@@ -55,6 +55,7 @@ class AddMedicine extends Component {
       imageUrl: this.props.imageUrl
     };
 
+    console.log("The submit values, in utc ?", prescriptionDetails);
     this.setState({ prescriptionDetails, showModal: true });
   }
 

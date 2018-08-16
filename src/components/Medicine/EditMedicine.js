@@ -140,7 +140,7 @@ class EditMedicine extends Component {
                       ({ alertDateTime, takenDateTime, isActive }) => (
                         <tr>
                           <td>
-                            {moment(alertDateTime).format("MMMM Do, h:mm:ss a")}
+                            {moment.utc(alertDateTime).local().format("MMMM Do, h:mm:ss a")}
                           </td>
                           <td>{isActive ? "Yes" : "No"} </td>
                           <td>{takenDateTime ? "Yes" : "No"} </td>

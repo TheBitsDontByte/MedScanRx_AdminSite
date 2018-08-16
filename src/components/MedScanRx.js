@@ -22,7 +22,7 @@ import SearchMedicine from "./Medicine/SearchMedicine";
 import Redirect from "./RedirectPage";
 import EditMedicine from "./Medicine/EditMedicine";
 
-import { login } from "../actions/auth-actions";
+import { login, loginOnRefresh } from "../actions/auth-actions";
 
 import reducers from "../reducers";
 
@@ -31,64 +31,75 @@ const store = createStore(reducers, composeEnhancers(applyMiddleware(thunk)));
 
 class MedScanRx extends Component {
   componentWillMount() {
-    let loggedIn = JSON.parse(sessionStorage.getItem("userInfo"));
-    if (!loggedIn) {
-    } else {
-      this.props.login(loggedIn, null)
+    let jwt = sessionStorage.getItem("jwt");
+    if (jwt) {
+      let parsed = JSON.parse(
+        window.atob(
+          jwt
+            .split(".")[1]
+            .replace("-", "+")
+            .replace("_", "/")
+        )
+      );
+
+      if (parsed.exp * 1000 > Date.now()) 
+        this.props.loginOnRefresh(parsed.userName, jwt);
+      else 
+        sessionStorage.clear();
     }
   }
 
   render() {
     return (
       <BrowserRouter>
-      <div>
-        <Header />
-        <div className="body">
-          <Switch>
-            <PrivateRoute
-              path="/Search/AllPatients"
-              component={AllPatientSearch}
-            />
-            <PrivateRoute path="/Patient/Add" component={AddPatient} />
-            <PrivateRoute
-              exact
-              path="/Patient/:patientId/EditPrescription/:prescriptionId"
-              component={EditMedicine}
-            />
-            <PrivateRoute
-              exact
-              path="/Patient/:patientId/SearchMedicine"
-              component={SearchMedicine}
-            />
-            <PrivateRoute
-              exact
-              path="/Patient/:patientId/AddRxImageMedicine"
-              component={AddRximageMedicine}
-            />
-            <PrivateRoute
-              exact
-              path="/Patient/:patientId/AddOpenFdaMedicine"
-              component={AddOpenfdaMedicine}
-            />
+        <div>
+          <Header />
+          <div className="body">
+            <Switch>
+              <PrivateRoute
+                path="/Search/AllPatients"
+                component={AllPatientSearch}
+              />
+              <PrivateRoute path="/Patient/Add" component={AddPatient} />
+              <PrivateRoute
+                exact
+                path="/Patient/:patientId/EditPrescription/:prescriptionId"
+                component={EditMedicine}
+              />
+              <PrivateRoute
+                exact
+                path="/Patient/:patientId/SearchMedicine"
+                component={SearchMedicine}
+              />
+              <PrivateRoute
+                exact
+                path="/Patient/:patientId/AddRxImageMedicine"
+                component={AddRximageMedicine}
+              />
+              <PrivateRoute
+                exact
+                path="/Patient/:patientId/AddOpenFdaMedicine"
+                component={AddOpenfdaMedicine}
+              />
 
-            <PrivateRoute
-              exact
-              path="/Patient/:patientId/Edit"
-              component={EditPatient}
-            />
-            <PrivateRoute
-              exact
-              path="/Patient/:patientId"
-              component={PatientDetail}
-            />
-            <PrivateRoute path="/MainMenu" component={MainMenu} />
-            <Route exact path="/" component={LoginPage} />
+              <PrivateRoute
+                exact
+                path="/Patient/:patientId/Edit"
+                component={EditPatient}
+              />
+              <PrivateRoute
+                exact
+                path="/Patient/:patientId"
+                component={PatientDetail}
+              />
+              <PrivateRoute path="/MainMenu" component={MainMenu} />
+              <Route exact path="/" component={LoginPage} />
 
-            <Route component={Redirect} />
-          </Switch>
+              <Route component={Redirect} />
+            </Switch>
+          </div>
+          <Footer />
         </div>
-        <Footer />
-      </div>
       </BrowserRouter>
     );
   }
@@ -96,5 +107,5 @@ class MedScanRx extends Component {
 
 export default connect(
   null,
-  { login }
+  { login, loginOnRefresh }
 )(MedScanRx);

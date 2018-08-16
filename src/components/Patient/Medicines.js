@@ -1,5 +1,6 @@
 import React from "react";
 import _ from "lodash";
+import moment from "moment";
 
 const Medicines = props => {
   return (
@@ -22,7 +23,7 @@ const Medicines = props => {
             >
               <td>{detail.prescriptionName}</td>
               <td>{detail.dosage}</td>
-              <td>{detail.nextAlert}</td>
+              <td>{moment.utc(detail.nextAlert).local().format("MMMM Do, h:mm:ss a")}</td>
               <td>{detail.ndc}</td>
             
             </tr>

@@ -26,47 +26,44 @@ const calculateAlertsStartingToday = ({
     if (i !== 0 && i % dosesPerDay == 0) daysToAdd++;
     let nextAlert = moment(scheduledAlerts[i % dosesPerDay])
       .add(daysToAdd, "day")
+      .utc().toString();
 
-      allAlerts.push({alertDateTime: new Date(nextAlert), takenDateTime: null, isActive: true});
+    allAlerts.push({
+      alertDateTime: new Date(nextAlert),
+      takenDateTime: null,
+      isActive: true
+    });
   }
 
   return allAlerts;
 };
 
-const calculateAlertsStartingTomorrow = ({
-  scheduledAlerts,
-  originalNumberOfDoses,
-}) => {
-  let allAlerts = [];
-  let daysToAdd = 1;
-  let dosesPerDay = scheduledAlerts.length
-  for (let i = 0; i < originalNumberOfDoses; i++) {
-    if (i !== 0 && i % dosesPerDay == 0) daysToAdd++;
-    let nextAlert = moment(scheduledAlerts[i % dosesPerDay])
-      .add(daysToAdd, "day")
+// const calculateAlertsStartingTomorrow = ({
+//   scheduledAlerts,
+//   originalNumberOfDoses,
+// }) => {
+//   let allAlerts = [];
+//   let daysToAdd = 1;
+//   let dosesPerDay = scheduledAlerts.length
+//   for (let i = 0; i < originalNumberOfDoses; i++) {
+//     if (i !== 0 && i % dosesPerDay == 0) daysToAdd++;
+//     let nextAlert = moment(scheduledAlerts[i % dosesPerDay])
+//       .add(daysToAdd, "day")
 
-    allAlerts.push({alertDateTime: new Date(nextAlert), takenDateTime: null, isActive: true});
-  }
+//     allAlerts.push({alertDateTime: new Date(nextAlert), takenDateTime: null, isActive: true});
+//   }
 
-  return allAlerts;
-};
+//   return allAlerts;
+// };
 
 export const calculateAlerts = (values, editing) => {
   if (editing) {
-    return values.startDay === "today"
-      ? calculateAlertsStartingToday({
-          scheduledAlerts: values.scheduledAlerts,
-          originalNumberOfDoses: values.currentNumberOfDoses,
-          dosesPerDay: values.dosesPerDay
-        })
-      : calculateAlertsStartingTomorrow({
-          scheduledAlerts: values.scheduledAlerts,
-          originalNumberOfDoses: values.currentNumberOfDoses,
-          dosesPerDay: values.dosesPerDay
-        });
+    return calculateAlertsStartingToday({
+      scheduledAlerts: values.scheduledAlerts,
+      originalNumberOfDoses: values.currentNumberOfDoses,
+      dosesPerDay: values.dosesPerDay
+    });
   }
 
-  return values.startDay === "today"
-    ? calculateAlertsStartingToday(values)
-    : calculateAlertsStartingTomorrow(values);
+  return calculateAlertsStartingToday(values);
 };

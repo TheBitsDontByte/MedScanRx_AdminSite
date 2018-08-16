@@ -120,7 +120,7 @@ class Alerts extends Component {
             />
           </label>
         </div>
-        <div className="col-sm-10">
+        {/* <div className="col-sm-10">
           <Field
             component={this.renderRadioButton}
             name="startDay"
@@ -133,7 +133,7 @@ class Alerts extends Component {
               }
             ]}
           />
-        </div>
+        </div> */}
         <div className="col-sm-12">
           <FieldArray
             label="Scheduled Times"

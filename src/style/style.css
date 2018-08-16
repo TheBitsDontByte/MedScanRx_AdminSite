@@ -80,6 +80,14 @@ a {
     border-radius: 20px;
 }
 
+.login-error-banner {
+    margin-bottom: 10px;
+    text-align: center;
+    color: white;
+    background-color: darkred;
+    font-size: 20px;
+    border-radius: 20px;
+}
 .header {
     background-color: rgba(163, 189, 230, 0.95);
     border-bottom: darkblue solid 1px;

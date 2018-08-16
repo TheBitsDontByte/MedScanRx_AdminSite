@@ -1,48 +1,53 @@
+import axios from "axios";
+import { BASE_URL } from "../globals/index";
 
 export const LOGIN = "login";
 export const LOGOUT = "logout";
-
+export const LOGIN_ERROR = "login_failure";
 
 //Authentication & Login & Logout
 export function login(loginData, navigationCallback) {
+  return dispatch => {
+    axios
+      .post(`${BASE_URL}/api/auth/admin/login`, loginData)
+      .then(response => {
+        sessionStorage.setItem("userName", loginData.userName);
+        sessionStorage.setItem("jwt", response.data.token);
 
-//used logins admin, admin1, admin2 ...@admin.com // (password Admin1!)
-    // loginData = {
-    //     Password: "Admin1!",
-    //     ConfirmPassword: "Admin1!",
-    //     Email: "admin2@admin.com"
-    // }
+        axios.defaults.headers.common["Authorization"] = `Bearer ${
+          response.data.token
+        }`;
 
-    // axios.post(`http://localhost:64850/api/Account/Register`, loginData)
-    // .then(response => console.log(response));
+        dispatch({
+          type: LOGIN,
+          payload: loginData.userName
+        });
 
-    //axios.post('http://localhost:64850/token', {Email: "admin2@admin.com", Password: "Admin1!"});
+        if (navigationCallback) navigationCallback();
+      })
+      .catch(error => {
+        dispatch({
+          type: LOGIN_ERROR,
+          payload: error.response.status == 401 ? "Invalid Username / Password" : "Error logging in, try again later"
+        });
+      });
+  };
+}
 
-    // axios({
-    //     method: "POST",
-    //     headers: {"Content-Type": 'application/x-www-form-urlencoded'},
-    //     url: "http://localhost:64850/token",
-    //     data: qs.stringify({UserName: "admin1@admin.com", Password: "Admin1!", grant_type: "password"})
-    // })
-    console.log("loggingIn", loginData);
-    sessionStorage.setItem("userInfo", JSON.stringify(loginData));
-    if (navigationCallback)
-        navigationCallback();
-    return {
-        type: LOGIN,
-        payload: loginData
-    }
+export function loginOnRefresh(userName, jwt) {
+  axios.defaults.headers.common["Authorization"] = `Bearer ${jwt}`;
+
+  return {
+    type: LOGIN,
+    payload: userName
+  };
 }
 
 export function logout(navigationCallback) {
-    if (navigationCallback)
-        navigationCallback();
-    sessionStorage.clear();
+  if (navigationCallback) navigationCallback();
+  sessionStorage.clear();
 
-    return {
-        type: LOGOUT,
-    }
-
+  return {
+    type: LOGOUT
+  };
 }
-
-
