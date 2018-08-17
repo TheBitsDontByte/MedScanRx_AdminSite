@@ -1,11 +1,9 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
-import { Link } from "react-router-dom";
 import { Field, reduxForm } from "redux-form";
 
 import { login } from "../actions/auth-actions";
 import SubMenuBox from "./shared/SubMenuBox";
-import ErrorBanner from "./shared/ErrorBanner";
 
 class LoginPage extends Component {
   componentWillMount() {
@@ -44,7 +42,6 @@ class LoginPage extends Component {
   }
 
   render() {
-    console.log("Loginpage props", this.props);
     const { handleSubmit, success, errors } = this.props;
     return (
       <div>
