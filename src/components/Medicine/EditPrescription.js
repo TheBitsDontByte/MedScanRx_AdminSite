@@ -28,7 +28,6 @@ class EditPrescription extends Component {
   }
 
   onSubmit(values) {
-    console.log("values before", values, this.state, this.props);
     let postData = {
       ...values,
       prescriptionId: this.props.prescriptionId,
@@ -47,7 +46,6 @@ class EditPrescription extends Component {
         values.scheduledAlerts.length
       );
 
-    console.log("after", postData);
     this.props.updatePrescription(postData, this.props.history.push);
   }
 
@@ -195,7 +193,6 @@ const mapStateToProps = (state, ownProps) => {
     let { patientDetails } = state.patients;
     let { prescriptionDetail } = state.medicine;
     let { openfda } = state.medicine.searchResults[0];
-    console.log("MSTP prescriptionDetail", prescriptionDetail);
     return {
       scheduledAlerts: prescriptionDetail.scheduledAlerts,
       currentNuberOfDoses: prescriptionDetail.currentNumberOfDoses,

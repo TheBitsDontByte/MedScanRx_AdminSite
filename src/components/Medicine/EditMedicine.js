@@ -55,7 +55,6 @@ class EditMedicine extends Component {
   savePrescription() {
     this.setState({ showModal: false });
     let { prescriptionDetails } = this.state;
-    console.log("Saving prescription", prescriptionDetails)
     this.props.updatePrescriptionDetail(prescriptionDetails, () =>
       this.props.history.replace(`/Patient/${prescriptionDetails.patientId}`)
     );

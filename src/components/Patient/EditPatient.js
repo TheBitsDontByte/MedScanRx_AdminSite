@@ -65,7 +65,6 @@ class EditPatient extends Component {
   }
 
   render() {
-    console.log("Props in edits render", this.props);
 
     const { handleSubmit, noSuccess, errors } = this.props;
     return (

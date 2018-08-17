@@ -6,6 +6,7 @@ import { login } from "../actions/auth-actions";
 import SubMenuBox from "./shared/SubMenuBox";
 
 class LoginPage extends Component {
+  state = {submitting: false}
   componentWillMount() {
     if (this.props.isLoggedIn) this.props.history.replace("/MainMenu");
   }
@@ -39,6 +40,7 @@ class LoginPage extends Component {
     this.props.login(loginData, () => {
       this.props.history.push("/MainMenu");
     });
+
   }
 
   render() {
@@ -47,9 +49,9 @@ class LoginPage extends Component {
       <div>
         <SubMenuBox className="login-box" label="Login" removeCenter={true}>
           <form onSubmit={handleSubmit(this.onSubmit.bind(this))}>
-            {!success && <div className="login-error-banner">{errors}</div>}
+            {!success && !this.state.submitting && <div className="login-error-banner">{errors}</div>}
             <div>
-              <Field
+              <Field 
                 label="Username"
                 name="userName"
                 type="text"

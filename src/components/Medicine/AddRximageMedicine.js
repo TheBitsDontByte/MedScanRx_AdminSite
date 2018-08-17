@@ -55,7 +55,6 @@ class AddMedicine extends Component {
       imageUrl: this.props.imageUrl
     };
 
-    console.log("The submit values, in utc ?", prescriptionDetails);
     this.setState({ prescriptionDetails, showModal: true });
   }
 
@@ -113,7 +112,6 @@ class AddMedicine extends Component {
 
     if (!this.props.ndc) this.props.history.push("/RedirectPage");
 
-    console.log("props on rximage render", this.props);
     return (
       <div className="row">
         <h1>
@@ -236,7 +234,6 @@ class AddMedicine extends Component {
 
 const mapStateToProps = (state, ownProps) => {
   if (state.patients.patientDetails && state.medicine.medicineDetails) {
-    console.log("returning after error");
     let { patientDetails } = state.patients;
     let medicineDetails = state.medicine.medicineDetails;
 

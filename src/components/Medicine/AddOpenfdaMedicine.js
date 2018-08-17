@@ -49,7 +49,6 @@ class AddMedicine extends Component {
 
   savePrescription() {
     this.setState({ showModal: false });
-    console.log("Saving prescription");
     this.props.savePrescription(this.state.prescriptionDetails, this.props.history.push);
   }
 

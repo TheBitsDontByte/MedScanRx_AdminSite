@@ -11,7 +11,6 @@ class MedicineConfirmModal extends Component {
 
   render() {
     let { prescriptionDetails } = this.props;
-    console.log(prescriptionDetails);
     return (
       <Modal show={this.props.showModal}>
         <Modal.Header>

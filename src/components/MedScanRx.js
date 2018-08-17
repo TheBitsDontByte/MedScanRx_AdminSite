@@ -31,22 +31,7 @@ const store = createStore(reducers, composeEnhancers(applyMiddleware(thunk)));
 
 class MedScanRx extends Component {
   componentWillMount() {
-    let jwt = sessionStorage.getItem("jwt");
-    if (jwt) {
-      let parsed = JSON.parse(
-        window.atob(
-          jwt
-            .split(".")[1]
-            .replace("-", "+")
-            .replace("_", "/")
-        )
-      );
-
-      if (parsed.exp * 1000 > Date.now()) 
-        this.props.loginOnRefresh(parsed.userName, jwt);
-      else 
-        sessionStorage.clear();
-    }
+    this.props.loginOnRefresh();
   }
 
   render() {
